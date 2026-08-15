@@ -1,3 +1,8 @@
+---
+name: abcnuts-debug-mining-engine
+description: Transform every debugging session into reusable skills. Captures debugging sessions and turns them into full skills, code snippets, and playbooks.
+---
+
 # Debug Mining Engine
 
 **"The answer lies in the darkness"** - Transform every debugging session into reusable skills

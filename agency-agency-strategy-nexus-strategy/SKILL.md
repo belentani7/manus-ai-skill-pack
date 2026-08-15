@@ -1,3 +1,8 @@
+---
+name: agency-agency-strategy-nexus-strategy
+description: NEXUS - Network of EXperts, Unified in Strategy. Complete operational playbook for multi-agent orchestration. Deployment doctrine that turns independent AI specialists into a synchronized intelligence network.
+---
+
 # 🌐 NEXUS — Network of EXperts, Unified in Strategy
 
 ## The Agency's Complete Operational Playbook for Multi-Agent Orchestration

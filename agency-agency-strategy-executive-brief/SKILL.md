@@ -1,3 +1,8 @@
+---
+name: agency-agency-strategy-executive-brief
+description: NEXUS Executive Brief. Network of EXperts, Unified in Strategy - executive summary of the multi-agent orchestration doctrine.
+---
+
 # 📑 NEXUS Executive Brief
 
 ## Network of EXperts, Unified in Strategy

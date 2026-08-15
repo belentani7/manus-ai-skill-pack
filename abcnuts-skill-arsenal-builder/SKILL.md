@@ -1,3 +1,8 @@
+---
+name: abcnuts-skill-arsenal-builder
+description: Build unified, organized skill arsenals with discovery systems, shared utilities, meta-skill orchestration, and cross-terminal deployment.
+---
+
 # Skill Arsenal Builder
 
 Build unified, organized skill arsenals with discovery systems, shared utilities, meta-skill orchestration, and cross-terminal deployment.

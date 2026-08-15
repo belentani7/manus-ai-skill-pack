@@ -1,3 +1,8 @@
+---
+name: agency-agency-strategy-quickstart
+description: NEXUS Quick-Start Guide. Get from zero to orchestrated multi-agent pipeline in 5 minutes.
+---
+
 # ⚡ NEXUS Quick-Start Guide
 
 > **Get from zero to orchestrated multi-agent pipeline in 5 minutes.**
