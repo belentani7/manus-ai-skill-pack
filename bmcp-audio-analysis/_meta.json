@@ -1,0 +1,21 @@
+{
+  "name": "audio-analysis",
+  "description": "Audio analysis with Tone.js and Web Audio API including FFT, frequency data extraction, amplitude measurement, and waveform analysis. Use when extracting audio data for visualizations, beat detection, or any audio-reactive features.",
+  "tags": [
+    "audio",
+    "javascript",
+    "code-generation"
+  ],
+  "sub_skills": [],
+  "source": "claude-user",
+  "type": "template",
+  "depends_on": [],
+  "enhances": [
+    "audio-reactive",
+    "particles-gpu",
+    "postfx-bloom"
+  ],
+  "last_reviewed_at": "2026-08-05",
+  "review_score": 60,
+  "relevance_tier": "B"
+}

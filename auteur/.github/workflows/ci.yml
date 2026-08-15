@@ -1,0 +1,46 @@
+name: CI
+
+# Honesty gate: every page shipped on the live site must pass the skill's own
+# anti-slop linter. If a showcase site or the landing regresses into slop,
+# this fails — so the "0 fails / 0 warns" claim in the README cannot rot.
+#
+# The site lives on the `gh-pages` branch (GitHub Pages serves it from there);
+# the linter lives on `main`. So this job checks out both and runs one against
+# the other. Pushing to either branch re-runs the gate.
+
+on:
+  push:
+    branches: [main, gh-pages]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  slopscan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the skill (linter lives here)
+        uses: actions/checkout@v4
+      - name: Check out the published site
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: site
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      # Every showcase dir is discovered, not listed: a hand-maintained list silently
+      # stops gating the newest site, which is exactly when the claim needs gating.
+      - name: Anti-slop gate on every shipped page
+        run: |
+          set -e
+          fail=0
+          for dir in site $(find site/showcase -mindepth 1 -maxdepth 1 -type d | sort); do
+            echo "::group::slopscan $dir"
+            node scripts/slopscan.mjs "$dir" || fail=1
+            echo "::endgroup::"
+          done
+          if [ "$fail" -ne 0 ]; then
+            echo "::error::slopscan found slop in a shipped page — the launch claim is broken."
+            exit 1
+          fi
+          echo "All shipped pages clean: 0 fails, 0 warns."

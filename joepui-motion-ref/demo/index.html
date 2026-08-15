@@ -1,0 +1,1664 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23f4f4f5'/%3E%3Cstop offset='100%25' stop-color='%2371717a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='7' fill='%230a0a0a'/%3E%3Cpath d='M8 20 Q10 8 16 16 Q22 24 24 12' stroke='url(%23g)' stroke-width='3' stroke-linecap='round' fill='none'/%3E%3Ccircle cx='24' cy='12' r='2.5' fill='%23f4f4f5'/%3E%3C/svg%3E">
+<title>Motion Ref — UI 动效参考</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0a;--surface:#141414;--card:#1a1a1a;--border:#282828;
+  --text:#f0f0f2;--text2:#b7b7bf;--text3:#8a8a94;
+  --accent:#c8c8cf;--accent2:#62646d;--accent-glow:rgba(200,200,207,.18);
+  --control:#2f3034;--control2:#3a3b40;--on-control:#f4f4f5;
+  --success:#3a3b40;--error:#2f3034;--warn:#aeb0b8;
+  --radius:12px;--card-radius:16px;
+}
+html{scroll-behavior:smooth;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5}
+body{min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+
+
+.page{display:flex;min-height:100vh}
+.sidebar{position:fixed;top:0;left:0;width:220px;height:100vh;background:var(--surface);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:100}
+.sidebar .logo{padding:0 20px 16px;border-bottom:1px solid var(--border);margin-bottom:12px}
+.sidebar .logo h1{font-size:15px;font-weight:700;color:var(--accent)}
+.sidebar .ver{font-size:11px;color:var(--text3);margin-top:2px}
+.sidebar nav a{display:flex;align-items:center;gap:8px;padding:7px 20px;font-size:13px;color:var(--text2);transition:all .15s}
+.sidebar nav a:hover,.sidebar nav a.active{color:var(--text);background:rgba(255,255,255,.04)}
+.sidebar nav a.active{border-right:2px solid var(--accent)}
+.sidebar nav a .num{font-size:11px;color:var(--text3);font-variant-numeric:tabular-nums;min-width:18px}
+/* hero */
+.hero{margin-bottom:56px;padding:24px 0 32px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:24px}
+.hero-copy{min-width:0}
+.hero h2{font-size:28px;font-weight:800;background:linear-gradient(135deg,var(--accent),#d4d4d8,#fafafa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px}
+.hero p{font-size:14px;color:var(--text3);max-width:480px;line-height:1.6}
+.github-link{display:inline-flex;align-items:center;justify-content:center;gap:9px;height:38px;padding:0 18px;border:1px solid #303033;border-radius:999px;background:rgba(255,255,255,.025);color:var(--text);font-size:15px;font-weight:650;line-height:1;white-space:nowrap;transition:background .18s,border-color .18s,color .18s,box-shadow .18s,transform .18s}
+.github-link svg{width:18px;height:18px;fill:currentColor;flex:0 0 auto}
+.github-link:hover{background:rgba(255,255,255,.055);border-color:#4a4a4f;color:#fff;box-shadow:0 0 0 1px rgba(255,255,255,.04),0 10px 30px rgba(0,0,0,.28);transform:translateY(-1px)}
+.github-link:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.hero-stats{display:flex;gap:24px;margin-top:16px}
+.hero-stat{display:flex;flex-direction:column}
+.hero-stat .val{font-size:22px;font-weight:700;color:var(--text)}
+.hero-stat .lbl{font-size:11px;color:var(--text3)}
+
+/* footer */
+.footer{text-align:center;padding:48px 0 32px;border-top:1px solid var(--border);margin-top:64px;color:var(--text3);font-size:13px}
+.footer-sub{margin-top:4px;font-size:12px;color:var(--text3);opacity:.6}
+.footer-sub a{color:var(--accent);opacity:.8}
+
+/* back to top */
+.back-top{position:fixed;bottom:28px;right:28px;width:40px;height:40px;background:var(--surface);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s,border-color .2s;z-index:200;transform:translateY(8px)}
+.back-top.show{opacity:1;pointer-events:auto;transform:translateY(0)}
+.back-top:hover{border-color:var(--accent);color:var(--accent)}
+
+.main{margin-left:220px;flex:1;padding:40px 48px 80px}
+.section{margin-bottom:64px}
+.section-head{margin-bottom:28px;padding-left:16px;border-left:3px solid #d7d7dc;position:relative}
+.section-head h2{font-size:20px;font-weight:700;margin-bottom:4px;letter-spacing:0}
+.section-head p{font-size:13px;color:var(--text2)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--card-radius);overflow:hidden;transition:border-color .2s,box-shadow .2s;position:relative}
+.card:hover{border-color:var(--accent)}
+.card .preview{height:140px;display:flex;align-items:center;justify-content:center;background:var(--bg);position:relative;overflow:hidden;cursor:pointer}
+.card .info{padding:10px 14px}
+.card .info h3{font-size:13px;font-weight:600;margin-bottom:1px}
+.card .info p{font-size:11px;color:var(--text3);line-height:1.4}
+.card .tag{display:inline-block;font-size:10px;padding:2px 6px;border-radius:4px;background:rgba(244,244,245,.12);color:var(--accent);margin-top:4px}
+
+/* click hint for interactive cards */
+.card[data-click] .preview::after{content:"";position:absolute;bottom:8px;right:8px;width:20px;height:20px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='1.5' stroke-linecap='round'%3E%3Cpath d='M15 15l-2 5L9 9l11 4-5 2z'/%3E%3C/svg%3E") center/contain no-repeat;opacity:.5;transition:opacity .2s}
+.card[data-click]:hover .preview::after{opacity:1}
+
+/* code panel */
+.code-panel{position:absolute;inset:0;background:rgba(11,11,15,.96);z-index:5;opacity:0;pointer-events:none;transition:opacity .2s;display:flex;flex-direction:column;padding:12px;overflow:hidden}
+.card.show-code .code-panel{opacity:1;pointer-events:auto}
+.code-panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.code-panel-head span{font-size:11px;font-weight:600;color:var(--accent)}
+.code-copy{width:20px;height:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.code-copy svg{width:14px;height:14px;stroke:var(--text3);stroke-width:2;pointer-events:none}
+.code-copy:hover svg{stroke:var(--accent)}
+.code-close{width:20px;height:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.code-close svg{width:14px;height:14px;stroke:var(--text3);stroke-width:2}
+.code-close:hover svg{stroke:var(--text)}
+.code-panel pre{flex:1;overflow:auto;font-family:'SF Mono',Consolas,monospace;font-size:10px;line-height:1.5;color:var(--text2);white-space:pre-wrap;word-break:break-all}
+.code-btn{position:absolute;top:8px;left:8px;width:22px;height:22px;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;z-index:2}
+.code-btn svg{width:12px;height:12px;stroke:var(--text3);stroke-width:2;fill:none}
+.card:hover .code-btn{opacity:1}
+.code-btn:hover{background:rgba(255,255,255,.1)}
+.code-btn:hover svg{stroke:var(--accent)}
+
+@media(max-width:900px){
+  .grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+}
+@media(max-width:768px){
+  .sidebar{display:none}
+  .main{margin-left:0;padding:24px 16px 60px}
+  .hero{flex-direction:column;gap:16px}
+  .grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:480px){.grid{grid-template-columns:1fr}}
+
+/* ═══ 1. 加载与等待 ═══ */
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.dots-pulse{display:flex;gap:6px}
+.dots-pulse span{width:10px;height:10px;background:var(--accent);border-radius:50%;animation:dotPulse 1.4s ease-in-out infinite}
+.dots-pulse span:nth-child(2){animation-delay:.15s}
+.dots-pulse span:nth-child(3){animation-delay:.3s}
+@keyframes dotPulse{0%,80%,100%{transform:scale(.4);opacity:.4}40%{transform:scale(1);opacity:1}}
+
+.skeleton-box{width:80%;display:flex;flex-direction:column;gap:8px}
+.skeleton-line{height:12px;border-radius:6px;background:linear-gradient(90deg,#2a2a32 25%,#35353d 50%,#2a2a32 75%);background-size:200% 100%;animation:shimmer 1.5s ease-in-out infinite}
+.skeleton-line:first-child{width:60%}
+.skeleton-line:nth-child(2){width:90%}
+.skeleton-line:last-child{width:45%}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+.progress-wrap{width:80%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:3px;animation:progFill 2.5s ease-in-out infinite}
+@keyframes progFill{0%{width:0}50%{width:85%}100%{width:100%}}
+
+.circ-prog{width:48px;height:48px;transform:rotate(-90deg)}
+.circ-prog circle{fill:none;stroke-width:4}
+.circ-prog .bg{stroke:var(--border)}
+.circ-prog .fg{stroke:var(--accent);stroke-dasharray:125.6;stroke-dashoffset:125.6;stroke-linecap:round;animation:circDraw 2s ease-in-out infinite alternate}
+@keyframes circDraw{to{stroke-dashoffset:25}}
+
+.breath{width:40px;height:40px;background:var(--accent);border-radius:50%;animation:breathe 2.5s ease-in-out infinite}
+@keyframes breathe{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.15);opacity:1}}
+
+.skel-pulse-box{width:80%;display:flex;flex-direction:column;gap:8px}
+.skel-pulse-line{height:12px;border-radius:6px;background:var(--border);animation:skelPulse 1.5s ease-in-out infinite}
+.skel-pulse-line:first-child{width:50%}
+.skel-pulse-line:nth-child(2){width:85%}
+.skel-pulse-line:last-child{width:40%}
+@keyframes skelPulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+.spin-dots{position:relative;width:40px;height:40px}
+.spin-dots span{position:absolute;width:6px;height:6px;background:var(--accent);border-radius:50%;top:0;left:17px;transform-origin:3px 20px;animation:spinDots 1.2s linear infinite}
+.spin-dots span:nth-child(2){transform:rotate(45deg);animation-delay:-.975s}
+.spin-dots span:nth-child(3){transform:rotate(90deg);animation-delay:-.9s}
+.spin-dots span:nth-child(4){transform:rotate(135deg);animation-delay:-.825s}
+.spin-dots span:nth-child(5){transform:rotate(180deg);animation-delay:-.75s}
+.spin-dots span:nth-child(6){transform:rotate(225deg);animation-delay:-.675s}
+.spin-dots span:nth-child(7){transform:rotate(270deg);animation-delay:-.6s}
+.spin-dots span:nth-child(8){transform:rotate(315deg);animation-delay:-.525s}
+@keyframes spinDots{0%{opacity:1}100%{opacity:.15}}
+
+/* ═══ 2. 入场与退场 ═══ */
+.fade-demo{width:50px;height:50px;background:var(--accent);border-radius:50%;animation:fadeLoop 2.5s ease infinite}
+@keyframes fadeLoop{0%,100%{opacity:0}30%,70%{opacity:1}}
+
+.slide-up-demo{width:50px;height:50px;background:var(--accent);border-radius:50%;animation:slideUpLoop 2.5s ease infinite}
+@keyframes slideUpLoop{0%,100%{opacity:0;transform:translateY(20px)}30%,70%{opacity:1;transform:translateY(0)}}
+
+.scale-in-demo{width:50px;height:50px;background:var(--accent);border-radius:50%;animation:scaleInLoop 2.5s ease infinite}
+@keyframes scaleInLoop{0%,100%{opacity:0;transform:scale(.85)}30%,70%{opacity:1;transform:scale(1)}}
+
+.spring-demo{width:50px;height:50px;background:var(--accent);border-radius:50%;animation:springLoop 3s infinite}
+@keyframes springLoop{0%{opacity:0;transform:scale(.5)}25%{opacity:1;transform:scale(1.12)}35%{transform:scale(.95)}45%{transform:scale(1.03)}55%,75%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(.5)}}
+
+.stagger-demo{display:flex;gap:6px}
+.stagger-demo span{width:12px;height:40px;background:var(--accent);border-radius:4px;animation:staggerLoop 3s ease infinite;opacity:0}
+.stagger-demo span:nth-child(1){animation-delay:0s}
+.stagger-demo span:nth-child(2){animation-delay:.08s}
+.stagger-demo span:nth-child(3){animation-delay:.16s}
+.stagger-demo span:nth-child(4){animation-delay:.24s}
+.stagger-demo span:nth-child(5){animation-delay:.32s}
+@keyframes staggerLoop{0%,100%{opacity:0;transform:translateY(15px)}20%,70%{opacity:1;transform:translateY(0)}}
+
+.blur-demo{width:50px;height:50px;background:var(--accent);border-radius:50%;animation:blurLoop 3s ease infinite}
+@keyframes blurLoop{0%,100%{opacity:0;filter:blur(10px)}30%,70%{opacity:1;filter:blur(0)}}
+
+.slide-h-demo{width:50px;height:50px;background:var(--accent);border-radius:50%;animation:slideHLoop 2.5s ease infinite}
+@keyframes slideHLoop{0%,100%{opacity:0;transform:translateX(-30px)}30%,70%{opacity:1;transform:translateX(0)}}
+
+.collapse-demo{width:80%;overflow:hidden}
+.collapse-bar{height:28px;background:var(--control2);border:1px solid #55565d;border-radius:6px 6px 0 0;display:flex;align-items:center;padding:0 10px;font-size:11px;color:var(--on-control)}
+.collapse-bar svg{margin-left:4px;transition:transform .3s ease;animation:collapseArrow 3s ease-in-out infinite}
+.collapse-body{background:#25262a;border:1px solid #3c3d42;border-top:none;border-radius:0 0 6px 6px;animation:collapseLoop 3s ease-in-out infinite;overflow:hidden}
+.collapse-body-inner{padding:10px;font-size:11px;color:var(--text2)}
+@keyframes collapseLoop{0%,100%{max-height:0;opacity:0}35%,65%{max-height:60px;opacity:1}}
+@keyframes collapseArrow{0%,100%{transform:rotate(0deg)}35%,65%{transform:rotate(180deg)}}
+
+/* ═══ 3. 按钮与反馈 ═══ */
+.demo-btn{height:34px;padding:0 20px;min-width:100px;border:1px solid #4a4b50;border-radius:6px;background:var(--control);color:var(--on-control);font-size:12px;font-weight:600;line-height:1;cursor:pointer;outline:none;transition:all .15s;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.demo-btn:hover{background:var(--control2);border-color:#5a5b62}
+.press-btn{animation:pressHint 2s ease-in-out infinite}
+.press-btn:active{transform:scale(.94);transition-duration:80ms;animation:none}
+@keyframes pressHint{0%,100%{transform:scale(1)}50%{transform:scale(.97)}}
+.ripple-btn{position:relative;overflow:hidden}
+.ripple-btn .ripple-circle{position:absolute;border-radius:50%;background:rgba(255,255,255,.35);transform:scale(0);animation:rippleAnim .6s ease-out forwards;pointer-events:none}
+@keyframes rippleAnim{to{transform:scale(4);opacity:0}}
+
+.check-btn .check-svg{display:none;width:18px;height:18px;flex:0 0 18px}
+.check-btn .check-svg path{stroke:var(--on-control);stroke-width:2.5;fill:none;stroke-dasharray:24;stroke-dashoffset:24;stroke-linecap:round}
+.check-btn.done{background:var(--success)}
+.check-btn.done .btn-text{display:none}
+.check-btn.done .check-svg{display:inline-block}
+.check-btn.done .check-svg path{animation:drawCheck .45s ease forwards .1s}
+@keyframes drawCheck{to{stroke-dashoffset:0}}
+
+.shake-btn.shaking{animation:shake .4s ease;background:var(--error)}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+
+.submit-btn{min-width:120px;position:relative;transition:all .35s ease}
+.submit-btn.loading{width:42px;min-width:42px;padding:8px;border-radius:50%;color:transparent;pointer-events:none}
+.submit-btn.loading::after{content:"";position:absolute;inset:6px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+
+.glow-btn{animation:glowHint 2.5s ease-in-out infinite}
+.glow-btn:hover{box-shadow:0 0 24px var(--accent-glow),0 0 48px rgba(244,244,245,.12);animation:none}
+@keyframes glowHint{0%,100%{box-shadow:none}50%{box-shadow:0 0 16px var(--accent-glow)}}
+.bounce-btn{animation:bounceHint 2.5s ease-in-out infinite}
+.bounce-btn:active{animation:bounceTap .5s cubic-bezier(.34,1.56,.64,1)}
+@keyframes bounceHint{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes bounceTap{0%{transform:scale(1) translateY(0)}30%{transform:scale(.88,.96) translateY(4px)}50%{transform:scale(1.08,1) translateY(-8px)}70%{transform:scale(.98,1.02) translateY(-2px)}100%{transform:scale(1) translateY(0)}}
+
+.fill-btn{position:relative;overflow:hidden;user-select:none}
+.fill-btn::before{content:"";position:absolute;left:0;top:0;bottom:0;width:var(--fill,0%);background:rgba(255,255,255,.35);transition:width .05s linear}
+.fill-btn.filled{background:var(--success);color:var(--on-control)}
+.fill-btn.filled::before{display:none}
+
+/* ═══ 4. 弹层与浮层 ═══ */
+.modal-trigger{position:relative;font-size:11px;color:var(--text3)}
+.mini-modal-overlay{position:absolute;inset:0;background:rgba(0,0,0,.5);border-radius:inherit;opacity:0;pointer-events:none;transition:opacity .2s;display:flex;align-items:center;justify-content:center}
+.mini-modal-box{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px 16px;transform:scale(.9);opacity:0;transition:all .25s ease-out;font-size:11px;text-align:center;min-width:100px}
+.modal-trigger.show .mini-modal-overlay{opacity:1;pointer-events:auto}
+.modal-trigger.show .mini-modal-box{transform:scale(1);opacity:1}
+
+.sheet-area{position:relative;height:100%;width:100%}
+.mini-sheet{position:absolute;bottom:-100%;left:10%;right:10%;background:var(--card);border-radius:10px 10px 0 0;padding:10px;transition:bottom .3s ease-out;border:1px solid var(--border);border-bottom:none}
+.mini-sheet .handle{width:28px;height:3px;background:var(--text3);border-radius:2px;margin:0 auto 8px}
+.mini-sheet .sheet-row{height:8px;background:var(--border);border-radius:4px;margin-bottom:6px}
+.mini-sheet .sheet-row:last-child{width:60%}
+.sheet-area.show .mini-sheet{bottom:0}
+
+.dd-area{position:relative;display:flex;flex-direction:column;align-items:center}
+.dd-trigger{padding:6px 14px;background:var(--card);border:1px solid var(--border);border-radius:6px;font-size:11px;color:var(--text);cursor:pointer;display:flex;align-items:center;gap:4px}
+.dd-trigger .arrow{transition:transform .2s;font-size:9px}
+.dd-menu{margin-top:4px;background:var(--card);border:1px solid var(--border);border-radius:6px;overflow:hidden;transform-origin:top;transform:scaleY(.9);opacity:0;transition:all .15s ease;pointer-events:none;min-width:100px}
+.dd-area.show .dd-menu{transform:scaleY(1);opacity:1;pointer-events:auto}
+.dd-area.show .dd-trigger .arrow{transform:rotate(180deg)}
+.dd-menu-item{padding:6px 12px;font-size:11px;color:var(--text2);cursor:pointer;transition:background .1s}
+.dd-menu-item:hover{background:rgba(255,255,255,.05)}
+
+.pop-area{position:relative;display:flex;flex-direction:column;align-items:center}
+.pop-dot{width:32px;height:32px;background:var(--accent);border-radius:50%;cursor:pointer;transition:transform .15s}
+.pop-dot:hover{transform:scale(1.1)}
+.pop-bubble{position:absolute;bottom:calc(100% + 8px);background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--text2);white-space:nowrap;transform:scale(.9);opacity:0;transition:all .2s ease;pointer-events:none}
+.pop-bubble::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--border)}
+.pop-area.show .pop-bubble{transform:scale(1);opacity:1}
+
+.toast-area{position:relative;width:100%;height:100%}
+.mini-toast{position:absolute;top:-40px;left:50%;transform:translateX(-50%) translateY(-8px);background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-size:11px;white-space:nowrap;opacity:0;transition:all .3s ease;color:var(--text2)}
+.toast-area.show .mini-toast{top:12px;opacity:1;transform:translateX(-50%) translateY(0)}
+
+.alert-area{width:85%;overflow:hidden}
+.alert-bar{max-height:0;opacity:0;background:rgba(212,212,216,.1);border:1px solid rgba(212,212,216,.3);border-radius:6px;transition:all .3s ease;overflow:hidden}
+.alert-bar-inner{padding:6px 10px;font-size:11px;color:var(--warn);display:flex;align-items:center;gap:6px}
+.alert-area.show .alert-bar{max-height:40px;opacity:1;margin-bottom:6px}
+.alert-body{height:8px;background:var(--border);border-radius:4px;margin-bottom:6px}
+.alert-body:last-child{width:50%}
+
+.ctx-area{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text3)}
+.ctx-menu{position:absolute;background:var(--card);border:1px solid var(--border);border-radius:6px;overflow:hidden;transform:scale(.8);opacity:0;transition:all .12s ease;pointer-events:none;min-width:90px;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.ctx-area.show .ctx-menu{transform:scale(1);opacity:1;pointer-events:auto}
+.ctx-menu-item{padding:5px 12px;font-size:11px;color:var(--text2);cursor:pointer;transition:background .1s}
+.ctx-menu-item:hover{background:rgba(255,255,255,.06)}
+
+/* ═══ 5. 导航与转场 ═══ */
+.page-slide-demo{width:70%;height:60px;position:relative;overflow:hidden;border-radius:8px}
+.page-slide-demo .pg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:600;border-radius:8px}
+.page-slide-demo .pg-a{background:var(--accent2);animation:pgSlideA 3s ease-in-out infinite}
+.page-slide-demo .pg-b{background:#71717a;animation:pgSlideB 3s ease-in-out infinite}
+@keyframes pgSlideA{0%,30%{transform:translateX(0)}50%,80%{transform:translateX(-100%)}100%{transform:translateX(0)}}
+@keyframes pgSlideB{0%,30%{transform:translateX(100%)}50%,80%{transform:translateX(0)}100%{transform:translateX(100%)}}
+
+.fade-switch-demo{width:70%;height:50px;position:relative;border-radius:8px;overflow:hidden}
+.fade-switch-demo .fs{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;border-radius:8px}
+.fade-switch-demo .fs-a{background:var(--accent2);animation:fsA 3s ease infinite}
+.fade-switch-demo .fs-b{background:#71717a;animation:fsB 3s ease infinite}
+@keyframes fsA{0%,40%{opacity:1}50%,90%{opacity:0}100%{opacity:1}}
+@keyframes fsB{0%,40%{opacity:0}50%,90%{opacity:1}100%{opacity:0}}
+
+.shared-demo{width:80%;height:70px;position:relative;overflow:hidden;border-radius:8px;background:var(--card);border:1px solid var(--border)}
+.shared-list{position:absolute;inset:0;padding:6px;display:flex;flex-direction:column;gap:3px}
+.shared-row{display:flex;align-items:center;gap:6px}
+.shared-row .s-box{width:16px;height:16px;background:var(--border);border-radius:3px;flex-shrink:0}
+.shared-row:first-child .s-box{background:var(--accent)}
+.shared-row .s-line{height:5px;background:var(--border);border-radius:3px;flex:1}
+.shared-row .s-line:last-child{width:40%;flex:none}
+.shared-el{position:absolute;width:16px;height:16px;background:var(--accent);border-radius:3px;left:6px;top:6px;z-index:2;animation:sharedGrow 4s ease-in-out infinite}
+@keyframes sharedGrow{0%,20%{width:16px;height:16px;left:6px;top:6px;border-radius:3px}40%,65%{width:calc(100% - 12px);height:calc(100% - 12px);left:6px;top:6px;border-radius:6px}85%,100%{width:16px;height:16px;left:6px;top:6px;border-radius:3px}}
+
+.tab-slide-demo{width:85%;text-align:center}
+.tab-bar{display:flex;border-bottom:2px solid var(--border);position:relative;margin-bottom:8px}
+.tab-item{flex:1;padding:6px 0;font-size:11px;color:var(--text3)}
+.tab-indicator{position:absolute;bottom:-2px;height:2px;background:var(--accent);width:33.3%;animation:tabSlide 3s ease-in-out infinite;border-radius:1px}
+@keyframes tabSlide{0%,20%{left:0}40%,60%{left:33.3%}80%,100%{left:66.6%}}
+.tab-content{height:24px;font-size:11px;color:var(--text2);animation:tabFade 3s ease infinite}
+@keyframes tabFade{0%,15%{opacity:1}20%,35%{opacity:0}40%,55%{opacity:1}60%,75%{opacity:0}80%,95%{opacity:1}}
+
+.sidebar-demo{width:70%;height:60px;position:relative;overflow:hidden;border-radius:8px;background:var(--card)}
+.sb-side{position:absolute;left:-60px;top:0;width:60px;height:100%;background:var(--accent2);border-radius:8px 0 0 8px;transition:left .3s ease;display:flex;flex-direction:column;gap:6px;padding:8px;justify-content:center}
+.sb-side span{height:4px;background:rgba(255,255,255,.4);border-radius:2px}
+.sb-main{margin-left:0;height:100%;padding:10px;transition:margin-left .3s ease;display:flex;flex-direction:column;gap:6px;justify-content:center}
+.sb-main span{height:6px;background:var(--border);border-radius:3px}
+.sb-main span:last-child{width:50%}
+.sidebar-demo.show .sb-side{left:0}
+.sidebar-demo.show .sb-main{margin-left:60px}
+
+.vt-demo{width:70%;height:50px;position:relative;overflow:hidden;border-radius:8px}
+.vt-demo .vt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;border-radius:8px}
+.vt-a{background:var(--accent2)}
+.vt-b{background:#71717a;clip-path:circle(0% at 50% 50%);animation:vtCircle 3.5s ease infinite}
+@keyframes vtCircle{0%,30%{clip-path:circle(0% at 50% 50%)}50%,80%{clip-path:circle(75% at 50% 50%)}100%{clip-path:circle(0% at 50% 50%)}}
+
+
+/* ═══ 6. 表单与输入 ═══ */
+.focus-input{width:75%;padding:8px 12px;background:var(--bg);border:1.5px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;outline:none;transition:border-color .15s,box-shadow .15s}
+.focus-input:focus{border-color:#d7d7dc;box-shadow:0 0 0 2px rgba(215,215,220,.16),0 0 0 5px rgba(215,215,220,.08)}
+.focus-input::placeholder{color:var(--text3)}
+
+.float-label-wrap{position:relative;width:75%}
+.float-input{width:100%;padding:14px 12px 6px;background:var(--bg);border:1.5px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;outline:none;transition:border-color .15s}
+.float-input:focus{border-color:var(--accent)}
+.float-label{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--text3);transition:all .2s ease;pointer-events:none}
+.float-input:focus~.float-label,.float-input:not(:placeholder-shown)~.float-label{top:6px;transform:translateY(0) scale(.75);transform-origin:left;color:var(--accent)}
+
+.valid-shake-input{width:75%;padding:8px 12px;background:var(--bg);border:1.5px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;outline:none;transition:border-color .2s}
+.valid-shake-input.err{border-color:var(--error);animation:shake .4s ease}
+
+.toggle-track{--x:2px;width:44px;height:24px;background:#202125;border:1px solid #37383d;border-radius:12px;cursor:pointer;position:relative;transition:background .25s,border-color .25s,box-shadow .25s}
+.toggle-knob{width:18px;height:18px;background:#f4f4f5;border-radius:50%;position:absolute;top:50%;left:0;transform:translate(var(--x),-50%);transition:transform .25s cubic-bezier(.34,1.56,.64,1),background .25s}
+.toggle-track.on{--x:23px;background:#565861;border-color:#858791;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+
+.cb-wrap{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12px;color:var(--text2)}
+.cb-box{width:20px;height:20px;border:2px solid var(--border);border-radius:4px;position:relative;transition:all .2s;display:flex;align-items:center;justify-content:center}
+.cb-box svg{width:14px;height:14px;opacity:0;transform:scale(.5);transition:all .2s}
+.cb-box svg path{stroke:var(--on-control);stroke-width:2.5;fill:none;stroke-dasharray:20;stroke-dashoffset:20;stroke-linecap:round}
+.cb-wrap.checked .cb-box{background:var(--control2);border-color:#6a6b72}
+.cb-wrap.checked .cb-box svg{opacity:1;transform:scale(1)}
+.cb-wrap.checked .cb-box svg path{animation:drawCheck .3s ease forwards}
+
+.radio-group{display:flex;gap:16px}
+.radio-item{display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:var(--text2)}
+.radio-circle{width:18px;height:18px;border:2px solid var(--border);border-radius:50%;position:relative;transition:border-color .2s}
+.radio-dot{width:10px;height:10px;background:var(--accent);border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);transition:transform .2s cubic-bezier(.34,1.56,.64,1)}
+.radio-item.selected .radio-circle{border-color:var(--accent)}
+.radio-item.selected .radio-dot{transform:translate(-50%,-50%) scale(1)}
+
+.search-wrap{display:flex;align-items:center;position:relative}
+.search-icon{width:36px;height:36px;background:var(--card);border:1px solid var(--border);border-radius:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:all .3s ease;overflow:hidden;color:var(--text2)}
+.search-icon.expanded{width:180px;border-radius:8px;justify-content:flex-start;padding-left:10px}
+.search-input{width:0;border:none;background:transparent;color:var(--text);font-size:12px;outline:none;transition:width .3s ease,margin .3s ease;margin-left:0;padding:0}
+.search-icon.expanded .search-input{width:120px;margin-left:6px}
+
+/* ═══ 7. 文字与数据 ═══ */
+.typewriter{font-family:monospace;font-size:14px;color:var(--accent);overflow:hidden;white-space:nowrap;border-right:2px solid var(--accent);width:0;animation:typeW 3s steps(12) infinite,blink .6s step-end infinite alternate}
+@keyframes typeW{0%,100%{width:0}40%,80%{width:12ch}}
+@keyframes blink{50%{border-color:transparent}}
+
+.fade-words{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.fade-words span{font-size:13px;color:var(--text);opacity:0;animation:fadeWord 3s ease infinite;transform:translateY(8px)}
+.fade-words span:nth-child(1){animation-delay:0s}
+.fade-words span:nth-child(2){animation-delay:.12s}
+.fade-words span:nth-child(3){animation-delay:.24s}
+.fade-words span:nth-child(4){animation-delay:.36s}
+@keyframes fadeWord{0%,100%{opacity:0;transform:translateY(8px)}20%,80%{opacity:1;transform:translateY(0)}}
+
+.num-counter{font-size:28px;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
+
+.highlight-text{font-size:13px;padding:2px 4px;background:linear-gradient(90deg,rgba(212,212,216,.3) 50%,transparent 50%);background-size:200% 100%;background-position:100% 0;animation:hlText 3s ease infinite}
+@keyframes hlText{0%,100%{background-position:100% 0}30%,70%{background-position:0% 0}}
+
+.ticker-wrap{width:85%;overflow:hidden;position:relative}
+.ticker-track{display:flex;gap:24px;animation:tickerScroll 6s linear infinite;white-space:nowrap}
+.ticker-track span{font-size:12px;color:var(--text2);flex-shrink:0}
+@keyframes tickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+.scramble-text{font-family:monospace;font-size:16px;color:var(--accent);letter-spacing:1px}
+
+.flip-counter{display:flex;gap:4px}
+.flip-digit{width:28px;height:38px;background:var(--card);border:1px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:var(--accent);position:relative;overflow:hidden}
+.flip-digit span{display:block}
+@keyframes flipOut{from{transform:translateY(0);opacity:1}to{transform:translateY(6px);opacity:0}}
+@keyframes flipIn{from{transform:translateY(-6px);opacity:0}to{transform:translateY(0);opacity:1}}
+.flip-digit.flip-out span{animation:flipOut .15s ease-in forwards}
+.flip-digit.flip-in span{animation:flipIn .25s cubic-bezier(.34,1.56,.64,1) forwards}
+
+/* ═══ 8. 滚动驱动 ═══ */
+.scroll-reveal-demo{width:85%;height:90px;overflow-y:auto;background:var(--bg);border-radius:8px;padding:8px;border:1px solid var(--border)}
+.sr-item{height:28px;margin-bottom:6px;background:var(--accent2);border-radius:4px;opacity:0;transform:translateY(10px);transition:all .4s ease}
+.sr-item.visible{opacity:1;transform:translateY(0)}
+
+
+.read-progress-demo{width:85%}
+.rp-bar{width:0%;height:3px;background:var(--accent);border-radius:2px;animation:rpGrow 4s ease-in-out infinite;margin-bottom:8px}
+@keyframes rpGrow{0%{width:0}50%{width:100%}100%{width:0}}
+.rp-lines{display:flex;flex-direction:column;gap:4px}
+.rp-line{height:6px;background:var(--border);border-radius:3px}
+.rp-line:last-child{width:60%}
+
+.sticky-demo{width:85%;height:90px;overflow-y:auto;border-radius:8px;border:1px solid var(--border)}
+.sticky-header{position:sticky;top:0;background:var(--card);padding:6px 10px;font-size:11px;color:var(--text);border-bottom:1px solid var(--border);z-index:1;transition:padding .2s,font-size .2s,background .2s}
+.sticky-header.shrunk{padding:3px 10px;font-size:9px;background:var(--surface)}
+.sticky-body{padding:8px 10px}
+.sticky-body p{font-size:10px;color:var(--text3);margin-bottom:4px}
+
+.line-reveal-demo{font-size:12px;line-height:1.8}
+.line-reveal-demo span{display:block;color:var(--text3);animation:lineReveal 4s ease infinite}
+.line-reveal-demo span:nth-child(1){animation-delay:0s}
+.line-reveal-demo span:nth-child(2){animation-delay:.4s}
+.line-reveal-demo span:nth-child(3){animation-delay:.8s}
+@keyframes lineReveal{0%,100%{color:var(--text3)}25%,75%{color:var(--text)}}
+
+.img-reveal-demo{width:70px;height:70px;background:var(--accent);border-radius:8px;animation:imgClip 3s ease-in-out infinite}
+@keyframes imgClip{0%,100%{clip-path:inset(0 0 100% 0)}30%,70%{clip-path:inset(0 0 0 0)}}
+
+/* ═══ 9. 图标与标识 ═══ */
+.hamburger{width:24px;height:18px;position:relative;cursor:pointer}
+.hamburger span{display:block;height:2px;background:var(--text);border-radius:1px;position:absolute;width:100%;transition:all .3s ease}
+.hamburger span:nth-child(1){top:0}
+.hamburger span:nth-child(2){top:8px}
+.hamburger span:nth-child(3){top:16px}
+.hamburger.open span:nth-child(1){top:8px;transform:rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){top:8px;transform:rotate(-45deg)}
+
+.icon-swap{position:relative;width:36px;height:36px;cursor:pointer}
+.icon-swap .ico{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:20px;transition:all .25s ease}
+.icon-swap .ico-a{opacity:1;transform:scale(1)}
+.icon-swap .ico-b{opacity:0;transform:scale(.25);filter:blur(4px)}
+.icon-swap.swapped .ico-a{opacity:0;transform:scale(.25);filter:blur(4px)}
+.icon-swap.swapped .ico-b{opacity:1;transform:scale(1);filter:blur(0)}
+
+.svg-draw-demo svg{width:36px;height:36px}
+.svg-draw-demo path{fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round;stroke-dasharray:200;stroke-dashoffset:200;animation:svgDraw 2.5s ease infinite}
+@keyframes svgDraw{0%{stroke-dashoffset:200}50%,70%{stroke-dashoffset:0}100%{stroke-dashoffset:200}}
+
+.badge-demo{position:relative;width:40px;height:40px;background:var(--card);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.badge-dot{position:absolute;top:-4px;right:-4px;width:18px;height:18px;background:var(--error);border-radius:50%;font-size:9px;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;animation:badgeBounce 2s ease infinite}
+@keyframes badgeBounce{0%,100%{transform:scale(1)}10%{transform:scale(0)}20%{transform:scale(1.3)}30%{transform:scale(.9)}40%{transform:scale(1)}}
+
+.logo-draw svg{width:36px;height:36px}
+.logo-draw .logo-stroke{fill:none;stroke:var(--accent);stroke-width:1.5;stroke-dasharray:300;stroke-dashoffset:300;animation:logoDraw 3s ease infinite}
+.logo-draw .logo-fill{fill:var(--accent);opacity:0;animation:logoFill 3s ease infinite}
+@keyframes logoDraw{0%{stroke-dashoffset:300}40%{stroke-dashoffset:0}100%{stroke-dashoffset:0}}
+@keyframes logoFill{0%,35%{opacity:0}55%,80%{opacity:1}100%{opacity:0}}
+
+.arrow-flip{font-size:20px;cursor:pointer;transition:transform .25s ease;display:inline-block;color:var(--accent)}
+.arrow-flip.flipped{transform:rotate(180deg)}
+
+/* ═══ 10. 轮播与列表 ═══ */
+.carousel-demo{width:70%;overflow:hidden;border-radius:8px}
+.carousel-track{display:flex;animation:carouselSlide 4s ease-in-out infinite}
+.carousel-slide{min-width:100%;height:60px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--on-control);font-weight:600;border-radius:8px}
+.carousel-slide:nth-child(1){background:#52525b}
+.carousel-slide:nth-child(2){background:#71717a}
+.carousel-slide:nth-child(3){background:#62646d}
+@keyframes carouselSlide{0%,25%{transform:translateX(0)}35%,60%{transform:translateX(-100%)}70%,100%{transform:translateX(-200%)}}
+
+.card-stack-demo{width:80px;height:100px;position:relative}
+.cs-card{position:absolute;width:80px;height:80px;border:1px solid #5a5b62;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--on-control)}
+.cs-card:nth-child(1){background:#44454b;z-index:3;top:0;left:0;animation:csTop 4s ease-in-out infinite}
+.cs-card:nth-child(2){background:#34353a;z-index:2;top:6px;left:4px;transform:scale(.95);animation:csMid 4s ease-in-out infinite}
+.cs-card:nth-child(3){background:#26272b;z-index:1;top:12px;left:8px;transform:scale(.9);animation:csBot 4s ease-in-out infinite}
+@keyframes csTop{0%,20%{top:0;left:0;transform:scale(1) rotate(0);opacity:1}40%{transform:translateX(80px) rotate(12deg) scale(.95);opacity:0}41%,75%{top:12px;left:8px;transform:scale(.9);opacity:0}76%{opacity:0}90%,100%{top:0;left:0;transform:scale(1);opacity:1}}
+@keyframes csMid{0%,20%{top:6px;left:4px;transform:scale(.95)}40%,75%{top:0;left:0;transform:scale(1)}90%,100%{top:6px;left:4px;transform:scale(.95)}}
+@keyframes csBot{0%,20%{top:12px;left:8px;transform:scale(.9)}40%,75%{top:6px;left:4px;transform:scale(.95)}90%,100%{top:12px;left:8px;transform:scale(.9)}}
+
+.list-demo{width:80%;display:flex;flex-direction:column;gap:6px}
+.list-item{height:24px;background:var(--accent2);border-radius:4px;animation:listFadeIn .5s ease both;display:flex;align-items:center;padding:0 10px;font-size:10px;color:var(--on-control)}
+.list-item:nth-child(1){animation-delay:0s}
+.list-item:nth-child(2){animation-delay:.1s}
+.list-item:nth-child(3){animation-delay:.2s}
+@keyframes listFadeIn{from{opacity:0;transform:translateX(-15px)}to{opacity:1;transform:translateX(0)}}
+@keyframes listSlideOut{to{opacity:0;transform:translateX(15px);height:0;margin:0;padding:0}}
+
+.drag-demo{width:80%;display:flex;flex-direction:column;gap:4px}
+.drag-item{height:26px;background:var(--card);border:1px solid var(--border);border-radius:4px;display:flex;align-items:center;padding:0 8px;font-size:10px;color:var(--text2);cursor:grab;transition:all .2s}
+.drag-item:hover{border-color:var(--accent);background:rgba(244,244,245,.08)}
+.drag-item.dragging{transform:scale(1.03);box-shadow:0 4px 12px rgba(0,0,0,.3);z-index:1}
+.drag-item .grip{margin-right:6px;color:var(--text3);font-size:8px;letter-spacing:1px}
+
+.accordion-demo{width:80%}
+.acc-item{border:1px solid var(--border);border-radius:6px;margin-bottom:4px;overflow:hidden}
+.acc-header{padding:8px 10px;font-size:11px;color:var(--text);cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:var(--card)}
+.acc-header .acc-arrow{transition:transform .25s ease;font-size:10px}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .3s ease;background:var(--bg)}
+.acc-body-inner{padding:8px 10px;font-size:10px;color:var(--text3)}
+.acc-item.open .acc-arrow{transform:rotate(180deg)}
+.acc-item.open .acc-body{max-height:60px}
+
+.inf-demo{width:85%;height:90px;overflow-y:auto;border-radius:8px;border:1px solid var(--border);padding:6px}
+.inf-item{height:20px;background:var(--accent2);border-radius:4px;margin-bottom:4px;opacity:0;animation:listFadeIn .4s ease forwards}
+.inf-loader{text-align:center;padding:8px;font-size:10px;color:var(--text3)}
+
+/* ═══ 11. 状态切换 ═══ */
+.theme-demo{width:56px;height:56px;border-radius:10px;cursor:pointer;position:relative;overflow:hidden;border:1px solid #3a3b40;background:#111214}
+.theme-light{background:#d7d8dc;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:20px;clip-path:circle(0% at 50% 50%);transition:clip-path .5s ease;box-shadow:inset 0 0 0 1px rgba(0,0,0,.16)}
+.theme-light svg{stroke:#202124}
+.theme-dark{background:#1a1b1f;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:20px}
+.theme-dark svg{stroke:#f4f4f5}
+.theme-demo.light .theme-light{clip-path:circle(100% at 50% 50%)}
+
+
+
+.skel-content-demo{width:80%;position:relative;height:60px}
+.skel-layer,.content-layer{position:absolute;inset:0;display:flex;flex-direction:column;gap:6px;justify-content:center}
+.skel-layer span{height:10px;background:var(--border);border-radius:5px;animation:skelPulse 1.5s ease-in-out infinite}
+.skel-layer span:first-child{width:50%}
+.skel-layer span:last-child{width:70%}
+.content-layer{opacity:0}
+.content-layer span{height:10px;background:var(--accent2);border-radius:5px}
+.content-layer span:first-child{width:50%}
+.content-layer span:last-child{width:70%}
+.skel-content-demo.loaded .skel-layer{opacity:0;transition:opacity .3s}
+.skel-content-demo.loaded .content-layer{opacity:1;transition:opacity .3s}
+
+.err-recovery-demo{width:70%;display:flex;flex-direction:column;gap:6px;align-items:center}
+.err-recovery-bar{width:100%;height:32px;border:2px solid var(--error);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--error);transition:all .4s ease;cursor:pointer;gap:6px}
+.err-recovery-bar.recovering{border-color:var(--accent);color:var(--accent)}
+.err-recovery-bar.ok{border-color:var(--success);color:var(--success)}
+.er-spinner{width:12px;height:12px;border:2px solid transparent;border-top-color:currentColor;border-radius:50%;animation:spin .6s linear infinite;display:none}
+.err-recovery-bar.recovering .er-spinner{display:block}
+
+.expand-detail-demo{width:80%;cursor:pointer}
+.ed-summary{display:flex;align-items:center;gap:8px;padding:8px;background:var(--card);border:1px solid var(--border);border-radius:8px;transition:all .3s}
+.ed-avatar{width:28px;height:28px;background:var(--accent);border-radius:50%;flex-shrink:0}
+.ed-text{font-size:11px;color:var(--text2)}
+.ed-detail{max-height:0;overflow:hidden;transition:max-height .35s ease;background:var(--card);border:1px solid transparent;border-radius:0 0 8px 8px;margin-top:-1px}
+.ed-detail-inner{padding:10px;font-size:10px;color:var(--text3)}
+.expand-detail-demo.open .ed-summary{border-radius:8px 8px 0 0}
+.expand-detail-demo.open .ed-detail{max-height:60px;border-color:var(--border)}
+
+/* ═══ 12. 氛围与背景 ═══ */
+.gradient-flow-demo{width:70%;height:60px;border-radius:8px;border:1px solid #4c4d54;background:linear-gradient(130deg,#24252a 0%,#3a3b41 28%,#b6b7bd 48%,#4d4e55 66%,#1d1e22 100%);background-size:240% 240%;box-shadow:inset 0 1px 0 rgba(255,255,255,.16),inset 0 -18px 28px rgba(0,0,0,.18);animation:gradFlow 7s ease-in-out infinite}
+@keyframes gradFlow{0%{background-position:0% 45%}50%{background-position:100% 55%}100%{background-position:0% 45%}}
+
+.glow-pulse-demo{width:50px;height:50px;background:var(--accent);border-radius:50%;animation:glowPulse 2.5s ease-in-out infinite alternate}
+@keyframes glowPulse{from{box-shadow:0 0 8px var(--accent-glow)}to{box-shadow:0 0 28px rgba(244,244,245,.5),0 0 56px rgba(244,244,245,.2)}}
+
+.particle-canvas{width:100%;height:100%;position:absolute;inset:0}
+
+.magnetic-demo{width:50px;height:50px;background:var(--accent);border-radius:10px;transition:transform .15s ease-out;cursor:pointer}
+
+.glow-trace-card{width:70%;height:70px;background:var(--card);border:1px solid var(--border);border-radius:10px;position:relative;overflow:hidden;cursor:pointer}
+.glow-trace-card::before{content:"";position:absolute;width:120px;height:120px;background:radial-gradient(circle,rgba(244,244,245,.2),transparent 70%);border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);left:var(--mx,50%);top:var(--my,50%);opacity:0;transition:opacity .2s}
+.glow-trace-card:hover::before{opacity:1}
+.glow-trace-inner{position:relative;z-index:1;padding:16px;font-size:11px;color:var(--text2)}
+
+.light-sweep-demo{width:70%;height:40px;background:var(--card);border:1px solid var(--border);border-radius:8px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--text2);font-weight:600}
+.light-sweep-demo::after{content:"";position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(110deg,transparent,rgba(255,255,255,.08),transparent);animation:lightSweep 3s infinite}
+@keyframes lightSweep{0%{left:-100%}50%,100%{left:150%}}
+
+.scan-demo{width:70%;height:80px;position:relative;overflow:hidden;border-radius:0;background:#0a0a0a;display:flex;align-items:center;justify-content:center}
+.scan-grid{display:grid;grid-template-columns:repeat(5,6px);gap:3px;opacity:.4}
+.scan-grid span{width:6px;height:6px;background:var(--text3);border-radius:1px}
+.scan-demo::after{content:"";position:absolute;left:0;right:0;height:1px;background:var(--accent);box-shadow:0 0 12px 4px rgba(244,244,245,.5),0 0 30px 8px rgba(244,244,245,.2);animation:scanLine 3s ease-in-out infinite}
+@keyframes scanLine{0%,100%{top:-2px;opacity:0}10%{opacity:1}50%{top:calc(100% + 2px);opacity:1}60%,100%{opacity:0}}
+
+/* math curve loaders */
+.math-loader{width:70px;height:70px}
+.math-loader svg{width:100%;height:100%}
+
+.shimmer-text{font-size:18px;font-weight:800;background:linear-gradient(100deg,#b7b7bf 0%,#f4f4f5 34%,#fff 48%,#7f8088 58%,#f4f4f5 74%,#b7b7bf 100%);background-size:260% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmerText 1.8s ease-in-out infinite;text-shadow:0 0 14px rgba(255,255,255,.08)}
+@keyframes shimmerText{0%{background-position:120% 0}100%{background-position:-120% 0}}
+
+.num-popin span{display:inline-block;opacity:0;filter:blur(6px);transform:translateY(10px) scale(.5)}
+.num-popin.active span{animation:numPop .5s cubic-bezier(.34,1.56,.64,1) forwards}
+.num-popin.active span:nth-child(2){animation-delay:.08s}
+.num-popin.active span:nth-child(3){animation-delay:.16s}
+.num-popin.active span:nth-child(4){animation-delay:.24s}
+.num-popin.active span:nth-child(5){animation-delay:.32s}
+@keyframes numPop{from{opacity:0;filter:blur(6px);transform:translateY(10px) scale(.5)}to{opacity:1;filter:blur(0);transform:none}}
+
+.tooltip-demo{position:relative;cursor:pointer;padding:6px 14px;background:var(--card);border:1px solid var(--border);border-radius:6px;font-size:11px;color:var(--text2)}
+.tooltip-bubble{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%) translateY(4px);background:var(--text);color:var(--bg);font-size:10px;padding:4px 8px;border-radius:4px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s ease,transform .2s ease}
+.tooltip-demo:hover .tooltip-bubble{opacity:1;transform:translateX(-50%) translateY(0);transition-delay:.4s}
+.tooltip-demo:not(:hover) .tooltip-bubble{transition-delay:0s}
+
+.drawer-demo{width:90%;height:90px;position:relative;overflow:hidden;border-radius:8px;background:var(--bg);border:1px solid var(--border)}
+.drawer-panel{position:absolute;right:0;top:0;height:100%;width:55%;background:var(--surface);border-left:1px solid var(--border);transform:translateX(100%);transition:transform 300ms cubic-bezier(.32,.72,0,1);padding:8px;font-size:9px;color:var(--text2)}
+.drawer-demo.open .drawer-panel{transform:translateX(0)}
+.drawer-toggle{position:absolute;left:8px;top:8px;background:var(--accent2);color:#fff;border:none;border-radius:4px;padding:3px 8px;font-size:9px;cursor:pointer}
+
+.dock-demo{display:flex;align-items:end;gap:10px;padding:8px 14px;background:rgba(255,255,255,.06);border-radius:12px;backdrop-filter:blur(8px)}
+.dock-item{width:28px;height:28px;background:var(--accent2);border-radius:6px;transition:all .2s cubic-bezier(.34,1.56,.64,1);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;transform-origin:bottom center}
+.dock-item:hover{transform:scale(1.38) translateY(-7px)}
+.dock-item:hover+.dock-item,.dock-item:has(+.dock-item:hover){transform:scale(1.16) translateY(-3px)}
+
+.avatar-stack{display:flex}
+.avatar-stack .avatar{width:28px;height:28px;border-radius:50%;border:2px solid var(--bg);margin-left:-8px;transition:all .25s cubic-bezier(.34,1.56,.64,1);cursor:pointer}
+.avatar-stack .avatar:first-child{margin-left:0}
+.avatar-stack .avatar:nth-child(1){background:#f4f4f5}
+.avatar-stack .avatar:nth-child(2){background:#d4d4d8}
+.avatar-stack .avatar:nth-child(3){background:#fafafa}
+.avatar-stack .avatar:nth-child(4){background:#d4d4d8}
+.avatar-stack:hover .avatar{margin-left:4px}
+.avatar-stack:hover .avatar:first-child{margin-left:0}
+.avatar-stack .avatar:hover{transform:translateY(-6px) scale(1.15);z-index:2}
+
+.card3d-demo{width:70%;height:60px;background:linear-gradient(135deg,var(--accent2),var(--accent));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;font-weight:600;transition:transform .15s ease;transform-style:preserve-3d;cursor:pointer}
+
+
+/* ═══ 12. 数据可视化 ═══ */
+.bar-chart{display:flex;align-items:end;gap:6px;height:80px}
+.bar-col{width:16px;border-radius:3px 3px 0 0;animation:barRise 1.5s ease infinite alternate}
+.bar-col:nth-child(1){background:#f4f4f5;animation-delay:0s}
+.bar-col:nth-child(2){background:#a1a1aa;animation-delay:.1s}
+.bar-col:nth-child(3){background:#d4d4d8;animation-delay:.2s}
+.bar-col:nth-child(4){background:#f4f4f5;animation-delay:.3s}
+.bar-col:nth-child(5){background:#a1a1aa;animation-delay:.4s}
+.bar-col:nth-child(6){background:#d4d4d8;animation-delay:.5s}
+@keyframes barRise{0%{height:10%}100%{height:var(--h,60%)}}
+
+.donut-chart{width:60px;height:60px;transform:rotate(-90deg)}
+.donut-bg{fill:none;stroke:var(--border);stroke-width:5}
+.donut-fg{fill:none;stroke:var(--accent);stroke-width:5;stroke-linecap:round;stroke-dasharray:113.1;stroke-dashoffset:113.1;animation:donutDraw 2s ease-in-out infinite alternate}
+.donut-fg2{fill:none;stroke:#d4d4d8;stroke-width:5;stroke-linecap:round;stroke-dasharray:113.1;stroke-dashoffset:113.1;animation:donutDraw2 2s ease-in-out infinite alternate}
+@keyframes donutDraw{0%{stroke-dashoffset:113.1}100%{stroke-dashoffset:40}}
+@keyframes donutDraw2{0%{stroke-dashoffset:113.1}100%{stroke-dashoffset:73}}
+
+.gauge-demo{width:80px;height:50px}
+.gauge-demo svg{width:100%;height:100%}
+.gauge-arc-bg{fill:none;stroke:var(--border);stroke-width:6;stroke-linecap:round}
+.gauge-arc-fg{fill:none;stroke:var(--accent);stroke-width:6;stroke-linecap:round;stroke-dasharray:100.5;stroke-dashoffset:100.5;animation:gaugeArc 2.5s ease-in-out infinite alternate}
+.gauge-needle-line{stroke:var(--text);stroke-width:1.5;stroke-linecap:round;transform-origin:40px 40px;animation:needleRot 2.5s ease-in-out infinite alternate}
+.gauge-needle-dot{fill:var(--text)}
+@keyframes gaugeArc{from{stroke-dashoffset:100.5}to{stroke-dashoffset:20}}
+@keyframes needleRot{from{transform:rotate(-90deg)}to{transform:rotate(54deg)}}
+
+.sparkline-demo{width:80%;height:58px}
+.sparkline-demo svg{width:100%;height:100%}
+.sparkline-path{fill:none;stroke:var(--accent);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.sparkline-area{fill:url(#sparkGrad);opacity:.28}
+
+.counter-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px;text-align:center;min-width:90px}
+.counter-card .counter-val{font-size:24px;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
+.counter-card .counter-lbl{font-size:10px;color:var(--text3);margin-top:2px}
+.counter-card .counter-trend{font-size:10px;color:var(--success);margin-top:4px}
+
+.hbar-chart{width:78%;height:82px;display:flex;flex-direction:column;justify-content:center;gap:8px;border-left:1px solid #383941;padding-left:0}
+.hbar{height:9px;border-radius:0 4px 4px 0;background:linear-gradient(90deg,#73747c,#d7d7dc);transform-origin:left;transform:scaleX(.05);animation:hbarReveal 2.4s ease-in-out infinite}
+.hbar:nth-child(2){animation-delay:.08s;opacity:.82}.hbar:nth-child(3){animation-delay:.16s;opacity:.68}.hbar:nth-child(4){animation-delay:.24s;opacity:.56}.hbar:nth-child(5){animation-delay:.32s;opacity:.44}
+@keyframes hbarReveal{0%,8%{transform:scaleX(.05)}55%,86%{transform:scaleX(1)}100%{transform:scaleX(.05)}}
+
+.scrubber-demo{width:82%;height:92px;position:relative}
+.scrubber-demo svg{width:100%;height:100%;overflow:visible}
+.scrub-base{fill:none;stroke:#3a3b42;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.scrub-active{fill:none;stroke:#f4f4f5;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:100;stroke-dashoffset:100;animation:scrubDraw 2.8s linear infinite}
+.scrub-guide{stroke:#73747c;stroke-width:1.1;opacity:.75}
+.scrub-dot{fill:#f4f4f5;filter:drop-shadow(0 0 8px rgba(244,244,245,.28))}
+.scrub-value{fill:#f4f4f5;font-size:10px;font-weight:700;font-variant-numeric:tabular-nums}
+@keyframes scrubDraw{0%{stroke-dashoffset:100}68%,100%{stroke-dashoffset:0}}
+
+.radial-bars{width:76px;height:76px;transform:rotate(-90deg)}
+.radial-bars .track{fill:none;stroke:#25262b;stroke-width:7}
+.radial-bars .ring{fill:none;stroke-linecap:round;stroke-width:7;stroke-dasharray:100;stroke-dashoffset:100;animation:radialDraw 2.4s ease-in-out infinite}
+.radial-bars .r1{stroke:#f4f4f5;animation-delay:0s}.radial-bars .r2{stroke:#b7b7bf;animation-delay:.12s}.radial-bars .r3{stroke:#777982;animation-delay:.24s}
+@keyframes radialDraw{0%,8%{stroke-dashoffset:100}58%,86%{stroke-dashoffset:var(--off)}100%{stroke-dashoffset:100}}
+
+.scatter-chart{width:82%;height:88px}
+.scatter-chart svg{width:100%;height:100%;overflow:visible}
+.scatter-axis{stroke:#383941;stroke-width:1.2}
+.scatter-point{fill:#d7d7dc;opacity:0;transform-box:fill-box;transform-origin:center;transform:scale(.2);animation:scatterPop 2.4s ease-in-out infinite;animation-delay:var(--d)}
+@keyframes scatterPop{0%,10%{opacity:0;transform:scale(.2)}38%,82%{opacity:.92;transform:scale(1)}100%{opacity:0;transform:scale(.2)}}
+
+.density-chart{width:82%;height:76px}
+.density-chart svg{width:100%;height:100%}
+.density-path{fill:none;stroke-width:2.3;stroke-linecap:round}
+.density-fill{opacity:.18}
+
+.pie-demo{width:76px;height:76px;border-radius:50%;background:conic-gradient(#f4f4f5 0 var(--a1),#b7b7bf var(--a1) var(--a2),#71717a var(--a2) var(--a3),#3f4047 var(--a3) var(--a4),transparent var(--a4) 360deg);animation:pieReveal 2.6s ease-in-out infinite}
+@property --a1{syntax:"<angle>";inherits:false;initial-value:0deg}
+@property --a2{syntax:"<angle>";inherits:false;initial-value:0deg}
+@property --a3{syntax:"<angle>";inherits:false;initial-value:0deg}
+@property --a4{syntax:"<angle>";inherits:false;initial-value:0deg}
+@keyframes pieReveal{0%{--a1:0deg;--a2:0deg;--a3:0deg;--a4:0deg}30%{--a1:122deg;--a2:122deg;--a3:122deg;--a4:122deg}48%{--a1:122deg;--a2:223deg;--a3:223deg;--a4:223deg}64%{--a1:122deg;--a2:223deg;--a3:295deg;--a4:295deg}80%,100%{--a1:122deg;--a2:223deg;--a3:295deg;--a4:360deg}}
+
+.radar-demo{width:86px;height:86px}
+.radar-demo svg{width:100%;height:100%}
+.radar-grid{fill:none;stroke:#2f3037;stroke-width:1}
+.radar-shape{fill:#d7d7dc;fill-opacity:.18;stroke:#f4f4f5;stroke-width:2;transform-origin:50px 50px;transform-box:view-box;animation:radarSweep 2.2s ease-in-out infinite alternate}
+@keyframes radarSweep{from{transform:scale(.1);opacity:.2}to{transform:scale(1);opacity:1}}
+
+/* new effects for existing categories */
+.confetti-btn{position:relative;overflow:visible}
+.confetti-particle{position:absolute;width:6px;height:6px;border-radius:50%;pointer-events:none;animation:confettiFly 1s ease-out forwards}
+@keyframes confettiFly{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--cx),var(--cy)) scale(0);opacity:0}}
+
+.cmd-palette-demo{width:90%;height:100%;position:relative;padding-top:28px;box-sizing:border-box}
+.cmd-trigger{padding:5px 10px;background:var(--card);border:1px solid var(--border);border-radius:6px;font-size:10px;color:var(--text3);cursor:pointer;display:flex;align-items:center;gap:6px}
+.cmd-trigger kbd{font-size:9px;padding:1px 4px;background:var(--bg);border:1px solid var(--border);border-radius:3px;color:var(--text3)}
+.cmd-overlay{position:absolute;inset:0;background:rgba(0,0,0,.5);border-radius:inherit;opacity:0;pointer-events:none;transition:opacity .15s;display:flex;align-items:flex-start;justify-content:center;padding-top:28px}
+.cmd-box{background:var(--card);border:1px solid var(--border);border-radius:8px;width:85%;transform:scale(.95) translateY(-8px);opacity:0;transition:all .2s cubic-bezier(.32,.72,0,1);overflow:hidden}
+.cmd-palette-demo.show .cmd-overlay{opacity:1;pointer-events:auto}
+.cmd-palette-demo.show .cmd-box{transform:scale(1) translateY(0);opacity:1}
+.cmd-input{width:100%;padding:6px 10px;background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--text);font-size:10px;outline:none}
+.cmd-items{padding:4px}
+.cmd-item{padding:4px 8px;font-size:10px;color:var(--text2);border-radius:4px;cursor:pointer;transition:background .1s}
+.cmd-item:hover{background:rgba(244,244,245,.1)}
+
+.otp-demo{display:flex;gap:6px}
+.otp-box{width:28px;height:34px;background:var(--bg);border:1.5px solid var(--border);border-radius:6px;text-align:center;color:var(--accent);font-size:16px;font-weight:700;outline:none;transition:border-color .15s,box-shadow .15s;caret-color:var(--accent)}
+.otp-box:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.otp-box.filled{border-color:var(--accent);animation:otpPop .2s cubic-bezier(.34,1.56,.64,1)}
+@keyframes otpPop{from{transform:scale(.9)}to{transform:scale(1)}}
+
+.range-demo{width:75%;display:flex;flex-direction:column;align-items:center;gap:6px}
+.range-track{width:100%;height:4px;background:var(--border);border-radius:2px;position:relative;cursor:pointer}
+.range-fill{height:100%;background:var(--accent2);border-radius:2px;width:60%}
+.range-thumb{position:absolute;top:50%;width:16px;height:16px;background:var(--control2);border:2px solid #d7d7dc;border-radius:50%;transform:translate(-50%,-50%);transition:box-shadow .15s,transform .15s;cursor:grab;left:60%}
+.range-thumb:hover{box-shadow:0 0 0 6px var(--accent-glow);transform:translate(-50%,-50%) scale(1.1)}
+.range-val{font-size:14px;font-weight:600;color:var(--accent);font-variant-numeric:tabular-nums}
+
+.steps-demo{display:flex;align-items:center;gap:0}
+.step-dot{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--text3);transition:all .3s ease;background:var(--bg)}
+.step-dot.done{background:var(--control2);border-color:#666770;color:var(--on-control)}
+.step-dot.active{border-color:#d7d7dc;color:var(--on-control);animation:stepPulse 1.5s ease-in-out infinite}
+.step-line{width:20px;height:2px;background:var(--border);transition:background .3s}
+.step-line.done{background:var(--accent2)}
+@keyframes stepPulse{0%,100%{box-shadow:none}50%{box-shadow:0 0 0 4px var(--accent-glow)}}
+
+.gradient-text{font-size:20px;font-weight:850;background:linear-gradient(90deg,#7d7e86 0%,#f4f4f5 18%,#fff 32%,#9a9ba3 46%,#f7f7f8 62%,#6d6e76 78%,#f4f4f5 100%);background-size:220% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradText 2.2s ease-in-out infinite;text-shadow:0 0 12px rgba(255,255,255,.08)}
+@keyframes gradText{0%{background-position:0% 50%}100%{background-position:220% 50%}}
+
+
+.heart-like{cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center}
+.heart-like svg{transition:transform .3s cubic-bezier(.34,1.56,.64,1);fill:var(--text3)}
+.heart-like.liked svg{fill:#d4d4d8;transform:scale(1.25)}
+.heart-like:not(.liked) svg{transform:scale(1)}
+@keyframes heartPop{0%{transform:scale(1)}15%{transform:scale(.7)}40%{transform:scale(1.3)}60%{transform:scale(.95)}100%{transform:scale(1.1)}}
+.heart-like.pop svg{animation:heartPop .45s ease forwards;fill:#d4d4d8}
+
+.copy-check{cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;position:relative}
+.copy-check svg{width:22px;height:22px;stroke:var(--text2);stroke-width:1.5;fill:none;transition:all .2s}
+.copy-check .cc-copy{position:absolute}
+.copy-check .cc-check{position:absolute;opacity:0;transform:scale(.5);stroke:var(--accent)}
+.copy-check.copied .cc-copy{opacity:0;transform:scale(.5)}
+.copy-check.copied .cc-check{opacity:1;transform:scale(1)}
+
+.bell-shake{cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center}
+.bell-shake svg{width:22px;height:22px;stroke:var(--text2);stroke-width:1.5;fill:none;transform-origin:top center}
+@keyframes bellRing{0%,100%{transform:rotate(0)}10%{transform:rotate(14deg)}20%{transform:rotate(-14deg)}30%{transform:rotate(10deg)}40%{transform:rotate(-10deg)}50%{transform:rotate(6deg)}60%{transform:rotate(-4deg)}70%{transform:rotate(2deg)}80%{transform:rotate(0)}}
+.bell-shake.ringing svg{animation:bellRing .8s ease}
+
+.morph-icon{cursor:pointer;transition:transform .15s}
+.morph-icon:hover{transform:scale(1.1)}
+.morph-icon path{transition:d .4s cubic-bezier(.34,1.56,.64,1),fill .3s}
+
+.swipe-demo{width:80%;overflow:hidden;border-radius:6px}
+.swipe-item{position:relative;overflow:hidden}
+.swipe-content{background:var(--card);border:1px solid var(--border);padding:8px 12px;font-size:11px;color:var(--text2);position:relative;z-index:1;transition:transform .3s cubic-bezier(.32,.72,0,1);cursor:grab}
+.swipe-actions{position:absolute;right:0;top:0;bottom:0;width:128px;display:flex}
+.swipe-action{width:64px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--on-control);white-space:nowrap}
+.swipe-action.delete{background:var(--error)}
+.swipe-action.archive{background:var(--control2)}
+.swipe-item.swiped .swipe-content{transform:translateX(-128px)}
+
+.celebration-demo{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+.celebrate-btn{padding:6px 14px;background:var(--control);color:var(--on-control);border:1px solid #4a4b50;border-radius:6px;font-size:11px;cursor:pointer;font-weight:600}
+.celebrate-particle{position:absolute;pointer-events:none;animation:celebFly 1.2s ease-out forwards}
+@keyframes celebFly{0%{transform:translate(0,0) rotate(0deg) scale(1);opacity:1}100%{transform:translate(var(--tx),var(--ty)) rotate(var(--rot)) scale(0);opacity:0}}
+
+/* Wave Bars */
+.wave-bars{display:flex;align-items:flex-end;gap:3px;height:32px}
+.wave-bars span{width:4px;background:var(--accent);border-radius:2px;animation:waveBar 1.2s ease-in-out infinite}
+.wave-bars span:nth-child(1){animation-delay:0s;height:12px}
+.wave-bars span:nth-child(2){animation-delay:.1s;height:20px}
+.wave-bars span:nth-child(3){animation-delay:.2s;height:28px}
+.wave-bars span:nth-child(4){animation-delay:.3s;height:16px}
+.wave-bars span:nth-child(5){animation-delay:.4s;height:24px}
+@keyframes waveBar{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(1)}}
+
+/* Typing Indicator */
+.typing-demo{display:flex;align-items:center;gap:4px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:8px 14px}
+.typing-demo span{width:6px;height:6px;border-radius:50%;background:var(--text3);animation:typingDot 1.4s ease-in-out infinite}
+.typing-demo span:nth-child(2){animation-delay:.2s}
+.typing-demo span:nth-child(3){animation-delay:.4s}
+@keyframes typingDot{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-6px);opacity:1}}
+
+/* Hourglass Rotate */
+.hourglass-demo{display:flex;align-items:center;justify-content:center}
+.hourglass-svg{width:32px;height:32px;color:var(--accent);animation:hourglassFlip 2s ease-in-out infinite;transform-origin:center}
+@keyframes hourglassFlip{0%{transform:rotate(0deg)}50%{transform:rotate(180deg)}50.01%{transform:rotate(180deg)}100%{transform:rotate(360deg)}}
+
+/* Online Status */
+.online-demo{display:flex;align-items:center;gap:10px;cursor:pointer}
+.status-dot-wrap{position:relative;width:12px;height:12px}
+.status-dot{width:12px;height:12px;border-radius:50%;background:#e4e4e7;transition:background .3s ease}
+.status-pulse{position:absolute;top:0;left:0;width:12px;height:12px;border-radius:50%;background:#e4e4e7;animation:statusPulse 2s ease-out infinite;opacity:0}
+.online-demo.offline .status-dot{background:var(--text3)}
+.online-demo.offline .status-pulse{animation:none}
+.online-demo .status-label{font-size:12px;color:var(--text2);transition:color .3s}
+@keyframes statusPulse{0%{transform:scale(1);opacity:.6}100%{transform:scale(2.5);opacity:0}}
+
+/* Favorite Star */
+.fav-star-demo{display:flex;align-items:center;justify-content:center;cursor:pointer}
+.fav-star-demo svg{transition:transform .3s cubic-bezier(.34,1.56,.64,1);fill:none;stroke:var(--text3);stroke-width:1.5}
+.fav-star-demo.active svg{fill:#d4d4d8;stroke:#d4d4d8;transform:scale(1.2)}
+.fav-star-demo.pop svg{animation:starPop .4s ease}
+@keyframes starPop{0%{transform:scale(1)}30%{transform:scale(.7)}60%{transform:scale(1.3)}100%{transform:scale(1.2)}}
+
+/* Success / Fail */
+.sf-demo{display:flex;align-items:center;justify-content:center;cursor:pointer}
+.sf-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid transparent;transition:background .3s ease,border-color .3s ease,box-shadow .3s ease}
+.sf-icon.pending{background:#202125;border-color:#37383d;box-shadow:inset 0 0 0 1px rgba(255,255,255,.03)}
+.sf-icon.success{background:#44454b;border-color:#6a6b72}
+.sf-icon.fail{background:#2a2b30;border-color:#5f6068}
+.sf-icon svg{stroke:var(--on-control);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.sf-icon svg path{stroke-dasharray:28;stroke-dashoffset:28}
+.sf-icon.drawing svg path{animation:sfDraw .38s ease forwards}
+@keyframes sfDraw{to{stroke-dashoffset:0}}
+
+
+/* Read / Unread */
+.read-demo{display:flex;align-items:center;gap:8px;cursor:pointer;padding:6px 10px;border-radius:8px;transition:background .3s}
+.read-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);transition:all .3s cubic-bezier(.34,1.56,.64,1)}
+.read-demo .read-text{font-size:12px;color:var(--text1);transition:color .3s,font-weight .3s}
+.read-demo.read .read-dot{transform:scale(0);opacity:0}
+.read-demo.read .read-text{color:var(--text3)}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.01ms!important;
+    scroll-behavior:auto!important;
+  }
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <aside class="sidebar">
+    <div class="logo">
+      <h1>Motion Ref</h1>
+    </div>
+    <nav>
+      <a href="#s1"><span class="num">01</span>加载与等待</a>
+      <a href="#s2"><span class="num">02</span>按钮与反馈</a>
+      <a href="#s3"><span class="num">03</span>文字与数据</a>
+      <a href="#s4"><span class="num">04</span>弹层与浮层</a>
+      <a href="#s5"><span class="num">05</span>导航与转场</a>
+      <a href="#s6"><span class="num">06</span>表单与输入</a>
+      <a href="#s7"><span class="num">07</span>滚动驱动</a>
+      <a href="#s8"><span class="num">08</span>图标与标识</a>
+      <a href="#s9"><span class="num">09</span>轮播与列表</a>
+      <a href="#s10"><span class="num">10</span>状态切换</a>
+      <a href="#s11"><span class="num">11</span>氛围与背景</a>
+      <a href="#s12"><span class="num">12</span>数据可视化</a>
+      <a href="#s13"><span class="num">13</span>入场与退场</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <div class="hero">
+      <div class="hero-copy">
+        <h2>Modern UI Motion Reference</h2>
+        <p>119 production-ready animation effects across 13 categories.</p>
+      </div>
+      <a class="github-link" href="https://github.com/joepUI/motion-ref-skill" target="_blank" rel="noopener" aria-label="Open motion-ref-skill on GitHub">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.56v-2.15c-3.2.7-3.87-1.36-3.87-1.36-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.68 0-1.25.45-2.28 1.19-3.08-.12-.29-.52-1.46.11-3.04 0 0 .97-.31 3.17 1.18A10.93 10.93 0 0 1 12 6.06c.98 0 1.95.13 2.87.38 2.2-1.49 3.17-1.18 3.17-1.18.63 1.58.23 2.75.11 3.04.74.8 1.19 1.83 1.19 3.08 0 4.41-2.69 5.38-5.25 5.67.41.36.78 1.06.78 2.13v3.16c0 .31.21.67.79.56A11.51 11.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/>
+        </svg>
+        <span>GitHub</span>
+      </a>
+    </div>
+    <!-- 1 -->
+    <section class="section" id="s1">
+      <div class="section-head"><h2>加载与等待</h2></div>
+      <div class="grid">
+        <div class="card"><div class="preview"><div class="spinner"></div></div><div class="info"><h3>Spinner</h3><p>圆环缺口旋转</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="dots-pulse"><span></span><span></span><span></span></div></div><div class="info"><h3>Dots Pulse</h3><p>三点依次脉冲</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="skeleton-box"><div class="skeleton-line"></div><div class="skeleton-line"></div><div class="skeleton-line"></div></div></div><div class="info"><h3>Skeleton Shimmer</h3><p>骨架屏 + 光扫</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="progress-wrap"><div class="progress-fill"></div></div></div><div class="info"><h3>Progress Bar</h3><p>横条进度填充</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><svg class="circ-prog" viewBox="0 0 48 48"><circle class="bg" cx="24" cy="24" r="20"/><circle class="fg" cx="24" cy="24" r="20"/></svg></div><div class="info"><h3>Circular Progress</h3><p>环形进度描边</p><span class="tag">SVG</span></div></div>
+        <div class="card"><div class="preview"><div class="breath"></div></div><div class="info"><h3>Breath Pulse</h3><p>呼吸感缩放</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="skel-pulse-box"><div class="skel-pulse-line"></div><div class="skel-pulse-line"></div><div class="skel-pulse-line"></div></div></div><div class="info"><h3>Skeleton Pulse</h3><p>骨架明暗交替</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="spin-dots"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div><div class="info"><h3>Spinner Dots</h3><p>圆点围环依次高亮</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="wave-bars"><span></span><span></span><span></span><span></span><span></span></div></div><div class="info"><h3>Wave Bars</h3><p>音频波形跳动</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="typing-demo"><span></span><span></span><span></span></div></div><div class="info"><h3>Typing Indicator</h3><p>聊天输入中提示</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="hourglass-demo"><svg class="hourglass-svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 2h12v6h-.01L14 12l3.99 4H18v6H6v-6h.01L10 12 6.01 8H6V2Zm2 2v3.17l4 4 4-4V4H8Zm4 8.83-4 4V20h8v-3.17l-4-4Z"/></svg></div></div><div class="info"><h3>Hourglass Rotate</h3><p>沙漏翻转等待</p><span class="tag">SVG</span></div></div>
+        <div class="card"><div class="preview"><div class="math-loader" id="mlRose2"><svg viewBox="0 0 100 100"></svg></div></div><div class="info"><h3>Rose Two</h3><p>双瓣玫瑰曲线</p><span class="tag">SVG</span></div></div>
+        <div class="card"><div class="preview"><div class="math-loader" id="mlRose3"><svg viewBox="0 0 100 100"></svg></div></div><div class="info"><h3>Rose Three</h3><p>三瓣玫瑰曲线</p><span class="tag">SVG</span></div></div>
+        <div class="card"><div class="preview"><div class="math-loader" id="mlLemniscate"><svg viewBox="0 0 100 100"></svg></div></div><div class="info"><h3>Lemniscate</h3><p>伯努利双纽线</p><span class="tag">SVG</span></div></div>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section class="section" id="s2">
+      <div class="section-head"><h2>按钮与点击反馈</h2></div>
+      <div class="grid">
+        <div class="card"><div class="preview"><button class="demo-btn press-btn">Press Me</button></div><div class="info"><h3>Press Scale</h3><p>按下缩小松开回弹</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><button class="demo-btn ripple-btn" onclick="createRipple(event)">Ripple</button></div><div class="info"><h3>Ripple</h3><p>点击处扩散波纹</p><span class="tag">JS</span></div></div>
+        <div class="card"><div class="preview"><button class="demo-btn check-btn" onclick="demoCheck(this)"><span class="btn-text">Submit</span><svg class="check-svg" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></button></div><div class="info"><h3>Success Check</h3><p>成功打勾动画</p><span class="tag">SVG</span></div></div>
+        <div class="card"><div class="preview"><button class="demo-btn shake-btn" onclick="demoShake(this)">Login</button></div><div class="info"><h3>Error Shake</h3><p>失败左右抖动</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><button class="demo-btn submit-btn" onclick="demoSubmit(this)">Send</button></div><div class="info"><h3>Submit Loading</h3><p>缩圆 + spinner</p><span class="tag">JS</span></div></div>
+        <div class="card"><div class="preview"><button class="demo-btn glow-btn">Hover Me</button></div><div class="info"><h3>Hover Glow</h3><p>悬浮边缘发光</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><button class="demo-btn bounce-btn">Like <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></button></div><div class="info"><h3>Bounce Tap</h3><p>弹跳点击反馈</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><button class="demo-btn fill-btn">Hold Me</button></div><div class="info"><h3>Fill Progress</h3><p>长按填充确认</p><span class="tag">JS</span></div></div>
+        <div class="card"><div class="preview"><button class="demo-btn confetti-btn" onclick="demoConfetti(this)">Celebrate</button></div><div class="info"><h3>Confetti Button</h3><p>点击庆祝粒子爆发</p><span class="tag">JS</span></div></div>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="section" id="s3">
+      <div class="section-head"><h2>文字与数据</h2></div>
+      <div class="grid">
+        <div class="card"><div class="preview"><div class="typewriter">Hello World!</div></div><div class="info"><h3>Typewriter</h3><p>逐字打出 + 光标</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="fade-words"><span>Design</span><span>is</span><span>how</span><span>it</span></div></div><div class="info"><h3>Fade Up Words</h3><p>逐词淡入上升</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="num-counter" data-target="12847">0</div></div><div class="info"><h3>Number Counter</h3><p>数字从 0 滚动到目标</p><span class="tag">JS</span></div></div>
+        <div class="card"><div class="preview"><span class="highlight-text">重点内容高亮</span></div><div class="info"><h3>Text Highlight</h3><p>荧光笔划过文字</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="ticker-wrap"><div class="ticker-track"><span>Breaking News</span><span>·</span><span>Motion Ref Updated</span><span>·</span><span>119 Modern Effects</span><span>·</span><span>Breaking News</span><span>·</span><span>Motion Ref Updated</span><span>·</span><span>119 Modern Effects</span><span>·</span></div></div></div><div class="info"><h3>Ticker</h3><p>无限循环滚动字幕</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="scramble-text">MOTION</div></div><div class="info"><h3>Scramble Text</h3><p>字符打散重组</p><span class="tag">JS</span></div></div>
+        <div class="card"><div class="preview"><div class="flip-counter"><div class="flip-digit"><span>0</span></div><div class="flip-digit"><span>5</span></div><div class="flip-digit"><span>:</span></div><div class="flip-digit"><span>0</span></div><div class="flip-digit"><span>0</span></div></div></div><div class="info"><h3>Flip Counter</h3><p>翻牌计数器</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="shimmer-text">Shimmer Effect</div></div><div class="info"><h3>Shimmer Text</h3><p>渐变光扫过文字</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="num-popin" id="numPopin"><span>1</span><span>2</span><span>,</span><span>3</span><span>4</span><span>5</span></div></div><div class="info"><h3>Number Pop-in</h3><p>数字逐位弹入带模糊</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="gradient-text">Colorful</div></div><div class="info"><h3>Gradient Text</h3><p>渐变色流动文字</p><span class="tag">CSS</span></div></div>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="section" id="s4">
+      <div class="section-head"><h2>弹层与浮层</h2></div>
+      <div class="grid">
+        <div class="card"><div class="preview modal-trigger" onclick="this.classList.toggle('show')"><div class="mini-modal-overlay"><div class="mini-modal-box">确认删除？<br><span style="color:var(--accent);cursor:pointer">OK</span></div></div></div><div class="info"><h3>Modal</h3><p>弹窗 scale + overlay</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview" onclick="this.querySelector('.sheet-area').classList.toggle('show')"><div class="sheet-area"><div class="mini-sheet"><div class="handle"></div><div class="sheet-row"></div><div class="sheet-row"></div><div class="sheet-row"></div></div></div></div><div class="info"><h3>Bottom Sheet</h3><p>从底部滑上来</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview" onclick="event.stopPropagation();this.querySelector('.dd-area').classList.toggle('show')"><div class="dd-area"><div class="dd-trigger">Select <span class="arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 3.5L5 6.5L8 3.5"/></svg></span></div><div class="dd-menu"><div class="dd-menu-item">Option A</div><div class="dd-menu-item">Option B</div><div class="dd-menu-item">Option C</div></div></div></div><div class="info"><h3>Dropdown</h3><p>向下展开菜单</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview" onclick="this.querySelector('.pop-area').classList.toggle('show')"><div class="pop-area"><div class="pop-bubble">Tooltip content</div><div class="pop-dot"></div></div></div><div class="info"><h3>Popover</h3><p>锚点气泡弹出</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview" onclick="this.querySelector('.toast-area').classList.toggle('show')"><div class="toast-area"><div class="mini-toast"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="vertical-align:middle;margin-right:4px"><path d="M5 13l4 4L19 7"/></svg>操作成功</div></div></div><div class="info"><h3>Toast</h3><p>轻提示滑入</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview" onclick="this.querySelector('.alert-area').classList.toggle('show')"><div class="alert-area"><div class="alert-bar"><div class="alert-bar-inner"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:3px"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>网络中断</div></div><div class="alert-body"></div><div class="alert-body"></div><div class="alert-body"></div></div></div><div class="info"><h3>Alert Slide</h3><p>顶部警告推入</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview ctx-area" onclick="demoCtxClick(event,this)"><span>点击触发菜单</span><div class="ctx-menu"><div class="ctx-menu-item">编辑</div><div class="ctx-menu-item">复制</div><div class="ctx-menu-item" style="color:var(--error)">删除</div></div></div><div class="info"><h3>Context Menu</h3><p>右键菜单弹出</p><span class="tag">JS</span></div></div>
+        <div class="card"><div class="preview"><div class="tooltip-demo" id="tooltipDemo">Hover me<div class="tooltip-bubble">Delayed tooltip</div></div></div><div class="info"><h3>Tooltip</h3><p>悬停延迟显示，离开即隐</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="drawer-demo" id="drawerDemo"><button class="drawer-toggle" onclick="this.parentElement.classList.toggle('open')">Open</button><div class="drawer-panel">Drawer Content<br>Settings / Filters</div></div></div><div class="info"><h3>Drawer</h3><p>侧滑抽屉面板</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="cmd-palette-demo" id="cmdPalette"><div class="cmd-trigger">Search... <kbd>Cmd+K</kbd></div><div class="cmd-overlay"><div class="cmd-box"><input class="cmd-input" placeholder="Type a command..."><div class="cmd-items"><div class="cmd-item">Open File</div><div class="cmd-item">Run Build</div><div class="cmd-item">Settings</div></div></div></div></div></div><div class="info"><h3>Command Palette</h3><p>Cmd+K 命令面板弹窗</p><span class="tag">JS</span></div></div>
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section class="section" id="s5">
+      <div class="section-head"><h2>导航与转场</h2></div>
+      <div class="grid">
+        <div class="card"><div class="preview"><div class="page-slide-demo"><div class="pg pg-a">Page A</div><div class="pg pg-b">Page B</div></div></div><div class="info"><h3>Page Slide</h3><p>新页面从右推入</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="fade-switch-demo"><div class="fs fs-a">Tab 1</div><div class="fs fs-b">Tab 2</div></div></div><div class="info"><h3>Fade Switch</h3><p>淡入淡出切换</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="shared-demo"><div class="shared-list"><div class="shared-row"><div class="s-box"></div><div class="s-line"></div><div class="s-line"></div></div><div class="shared-row"><div class="s-box"></div><div class="s-line"></div><div class="s-line"></div></div><div class="shared-row"><div class="s-box"></div><div class="s-line"></div><div class="s-line"></div></div></div><div class="shared-el"></div></div></div><div class="info"><h3>Shared Element</h3><p>列表项展开为详情</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="tab-slide-demo"><div class="tab-bar"><span class="tab-item">Home</span><span class="tab-item">Search</span><span class="tab-item">Profile</span><div class="tab-indicator"></div></div><div class="tab-content">Tab Content</div></div></div><div class="info"><h3>Tab Slide</h3><p>指示条滑动切换</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="sidebar-demo" onclick="this.classList.toggle('show')"><div class="sb-side"><span></span><span></span><span></span></div><div class="sb-main"><span></span><span></span><span></span></div></div></div><div class="info"><h3>Sidebar Push</h3><p>侧栏推入主内容</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="vt-demo"><div class="vt vt-a">Old View</div><div class="vt vt-b">New View</div></div></div><div class="info"><h3>View Transition</h3><p>圆形扩散视图过渡</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="dock-demo"><div class="dock-item">A</div><div class="dock-item">B</div><div class="dock-item">C</div><div class="dock-item">D</div><div class="dock-item">E</div></div></div><div class="info"><h3>Dock Nav</h3><p>Mac 风格悬停放大导航</p><span class="tag">CSS</span></div></div>
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section class="section" id="s6">
+      <div class="section-head"><h2>表单与输入</h2></div>
+      <div class="grid">
+        <div class="card"><div class="preview"><input class="focus-input" type="text" placeholder="点击聚焦..."></div><div class="info"><h3>Focus Ring</h3><p>聚焦边框高亮</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="float-label-wrap"><input class="float-input" type="text" placeholder=" "><span class="float-label">Email</span></div></div><div class="info"><h3>Label Float</h3><p>标签上浮变小</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><input class="valid-shake-input" type="text" placeholder="输入后回车" onkeydown="if(event.key==='Enter'){this.classList.add('err');setTimeout(()=>this.classList.remove('err'),500)}"></div><div class="info"><h3>Validation Shake</h3><p>校验失败抖动</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="toggle-track" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div></div><div class="info"><h3>Toggle Switch</h3><p>开关滑块切换</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="cb-wrap" onclick="this.classList.toggle('checked')"><div class="cb-box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></div><span>I agree</span></div></div><div class="info"><h3>Checkbox</h3><p>打勾描边动画</p><span class="tag">SVG</span></div></div>
+        <div class="card"><div class="preview"><div class="radio-group"><div class="radio-item selected" onclick="demoRadio(this)"><div class="radio-circle"><div class="radio-dot"></div></div><span>A</span></div><div class="radio-item" onclick="demoRadio(this)"><div class="radio-circle"><div class="radio-dot"></div></div><span>B</span></div><div class="radio-item" onclick="demoRadio(this)"><div class="radio-circle"><div class="radio-dot"></div></div><span>C</span></div></div></div><div class="info"><h3>Radio Select</h3><p>内圆点弹出选中</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="search-icon" onclick="this.classList.toggle('expanded');if(this.classList.contains('expanded'))this.querySelector('input').focus()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex-shrink:0"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4-4"/></svg><input class="search-input" type="text" placeholder="Search..."></div></div><div class="info"><h3>Search Expand</h3><p>图标展开为输入框</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="otp-demo" id="otpDemo"><input class="otp-box" type="text" maxlength="1" oninput="demoOtp(this)" onkeydown="demoOtpKeydown(this,event)"><input class="otp-box" type="text" maxlength="1" oninput="demoOtp(this)" onkeydown="demoOtpKeydown(this,event)"><input class="otp-box" type="text" maxlength="1" oninput="demoOtp(this)" onkeydown="demoOtpKeydown(this,event)"><input class="otp-box" type="text" maxlength="1" oninput="demoOtp(this)" onkeydown="demoOtpKeydown(this,event)"></div></div><div class="info"><h3>OTP Input</h3><p>逐位输入自动跳转</p><span class="tag">JS</span></div></div>
+        <div class="card"><div class="preview"><div class="range-demo" id="rangeDemo"><div class="range-val">60</div><div class="range-track" onmousedown="demoRange(event,this)"><div class="range-fill"></div><div class="range-thumb"></div></div></div></div><div class="info"><h3>Range Slider</h3><p>滑块拖拽选值</p><span class="tag">JS</span></div></div>
+        <div class="card"><div class="preview"><div class="steps-demo" id="stepsDemo" onclick="demoSteps(this)"><div class="step-dot done"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg></div><div class="step-line done"></div><div class="step-dot active">2</div><div class="step-line"></div><div class="step-dot">3</div><div class="step-line"></div><div class="step-dot">4</div></div></div><div class="info"><h3>Step Indicator</h3><p>多步骤进度指示器</p><span class="tag">JS</span></div></div>
+      </div>
+    </section>
+
+
+    <!-- 7 -->
+    <section class="section" id="s7">
+      <div class="section-head"><h2>滚动驱动</h2></div>
+      <div class="grid">
+        <div class="card"><div class="preview"><div class="scroll-reveal-demo" id="srDemo"><div class="sr-item"></div><div class="sr-item"></div><div class="sr-item"></div><div class="sr-item"></div><div class="sr-item"></div><div class="sr-item"></div></div></div><div class="info"><h3>Scroll Reveal</h3><p>滚入视口时淡入</p><span class="tag">JS</span></div></div>
+        <div class="card"><div class="preview"><div class="read-progress-demo"><div class="rp-bar"></div><div class="rp-lines"><div class="rp-line"></div><div class="rp-line"></div><div class="rp-line"></div></div></div></div><div class="info"><h3>Progress Indicator</h3><p>阅读进度条</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="sticky-demo"><div class="sticky-header">Header (sticky)</div><div class="sticky-body"><p>Content line 1</p><p>Content line 2</p><p>Content line 3</p><p>Content line 4</p><p>Content line 5</p><p>Content line 6</p><p>Content line 7</p></div></div></div><div class="info"><h3>Sticky Shrink</h3><p>吸顶缩小导航</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="line-reveal-demo"><span>第一行文字逐行</span><span>第二行高亮显示</span><span>第三行渐次点亮</span></div></div><div class="info"><h3>Line Reveal</h3><p>逐行文字高亮</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="img-reveal-demo"></div></div><div class="info"><h3>Image Reveal</h3><p>clip-path 揭示图片</p><span class="tag">CSS</span></div></div>
+      </div>
+    </section>
+    <!-- 8 -->
+    <section class="section" id="s8">
+      <div class="section-head"><h2>图标与标识</h2></div>
+      <div class="grid">
+        <div class="card"><div class="preview"><div class="hamburger" onclick="this.classList.toggle('open')"><span></span><span></span><span></span></div></div><div class="info"><h3>Hamburger / Close</h3><p>三线变叉号</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="icon-swap" onclick="this.classList.toggle('swapped')"><div class="ico ico-a"><svg width="20" height="20" viewBox="0 0 24 24" fill="var(--accent)"><circle cx="12" cy="12" r="5"/><g stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></g></svg></div><div class="ico ico-b"><svg width="20" height="20" viewBox="0 0 24 24" fill="var(--accent)"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg></div></div></div><div class="info"><h3>Icon Swap</h3><p>图标交叉切换</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="svg-draw-demo"><svg viewBox="0 0 60 60"><path d="M10 30 L25 45 L50 15"/></svg></div></div><div class="info"><h3>SVG Draw</h3><p>路径描边绘制</p><span class="tag">SVG</span></div></div>
+        <div class="card"><div class="preview"><div class="badge-demo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text2)" stroke-width="1.5" stroke-linecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg><div class="badge-dot">3</div></div></div><div class="info"><h3>Badge Bounce</h3><p>角标弹跳出现</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="logo-draw"><svg viewBox="0 0 60 60"><path class="logo-stroke" d="M30 5 L55 50 L5 50 Z"/><path class="logo-fill" d="M30 5 L55 50 L5 50 Z"/></svg></div></div><div class="info"><h3>Logo Entrance</h3><p>描边 + 填充入场</p><span class="tag">SVG</span></div></div>
+        <div class="card"><div class="preview"><span class="arrow-flip" onclick="this.classList.toggle('flipped')">▼</span></div><div class="info"><h3>Arrow Flip</h3><p>箭头旋转 180°</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><svg class="morph-icon" width="36" height="36" viewBox="0 0 24 24" onclick="demoMorph(this)"><path d="M8 5v14l11-7z" fill="var(--accent)"/></svg></div><div class="info"><h3>Morphing Icon</h3><p>图标路径平滑变形</p><span class="tag">SVG</span></div></div>
+        <div class="card"><div class="preview"><div class="heart-like" onclick="demoHeart(this)"><svg width="28" height="28" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z"/></svg></div></div><div class="info"><h3>Heart Like</h3><p>爱心点赞动画</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="copy-check" onclick="demoCopyCheck(this)"><svg class="cc-copy" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg><svg class="cc-check" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div></div><div class="info"><h3>Copy Check</h3><p>复制成功打勾</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="bell-shake" onclick="demoBell(this)"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg></div></div><div class="info"><h3>Bell Shake</h3><p>通知铃铛摇摆</p><span class="tag">CSS</span></div></div>
+      </div>
+    </section>
+
+    <!-- 9 -->
+    <section class="section" id="s9">
+      <div class="section-head"><h2>轮播与列表</h2></div>
+      <div class="grid">
+        <div class="card"><div class="preview"><div class="carousel-demo"><div class="carousel-track"><div class="carousel-slide">Slide 1</div><div class="carousel-slide">Slide 2</div><div class="carousel-slide">Slide 3</div></div></div></div><div class="info"><h3>Carousel Slide</h3><p>轮播横向滑动</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="card-stack-demo"><div class="cs-card">A</div><div class="cs-card">B</div><div class="cs-card">C</div></div></div><div class="info"><h3>Card Stack</h3><p>卡片堆叠翻页</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview" onclick="demoListToggle(this)"><div class="list-demo" id="listDemo"><div class="list-item">Item 1</div><div class="list-item">Item 2</div><div class="list-item">Item 3</div></div></div><div class="info"><h3>List Add/Remove</h3><p>点击添加/移除列表项</p><span class="tag">JS</span></div></div>
+        <div class="card"><div class="preview"><div class="drag-demo" id="dragDemo"><div class="drag-item" draggable="true"><span class="grip"><svg width="10" height="10" viewBox="0 0 10 10"><circle cx="3" cy="2" r="1" fill="currentColor"/><circle cx="7" cy="2" r="1" fill="currentColor"/><circle cx="3" cy="5" r="1" fill="currentColor"/><circle cx="7" cy="5" r="1" fill="currentColor"/><circle cx="3" cy="8" r="1" fill="currentColor"/><circle cx="7" cy="8" r="1" fill="currentColor"/></svg></span>Task A</div><div class="drag-item" draggable="true"><span class="grip"><svg width="10" height="10" viewBox="0 0 10 10"><circle cx="3" cy="2" r="1" fill="currentColor"/><circle cx="7" cy="2" r="1" fill="currentColor"/><circle cx="3" cy="5" r="1" fill="currentColor"/><circle cx="7" cy="5" r="1" fill="currentColor"/><circle cx="3" cy="8" r="1" fill="currentColor"/><circle cx="7" cy="8" r="1" fill="currentColor"/></svg></span>Task B</div><div class="drag-item" draggable="true"><span class="grip"><svg width="10" height="10" viewBox="0 0 10 10"><circle cx="3" cy="2" r="1" fill="currentColor"/><circle cx="7" cy="2" r="1" fill="currentColor"/><circle cx="3" cy="5" r="1" fill="currentColor"/><circle cx="7" cy="5" r="1" fill="currentColor"/><circle cx="3" cy="8" r="1" fill="currentColor"/><circle cx="7" cy="8" r="1" fill="currentColor"/></svg></span>Task C</div></div></div><div class="info"><h3>Drag Reorder</h3><p>拖拽排序动效</p><span class="tag">JS</span></div></div>
+        <div class="card"><div class="preview"><div class="accordion-demo"><div class="acc-item" onclick="demoAccordion(this)"><div class="acc-header">Section 1 <span class="acc-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 3.5L5 6.5L8 3.5"/></svg></span></div><div class="acc-body"><div class="acc-body-inner">Accordion content here</div></div></div><div class="acc-item" onclick="demoAccordion(this)"><div class="acc-header">Section 2 <span class="acc-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 3.5L5 6.5L8 3.5"/></svg></span></div><div class="acc-body"><div class="acc-body-inner">Another panel content</div></div></div></div></div><div class="info"><h3>Accordion</h3><p>手风琴展开折叠</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="inf-demo" id="infDemo"></div></div><div class="info"><h3>Infinite Scroll</h3><p>滚动到底加载更多</p><span class="tag">JS</span></div></div>
+        <div class="card"><div class="preview"><div class="avatar-stack"><div class="avatar"></div><div class="avatar"></div><div class="avatar"></div><div class="avatar"></div></div></div><div class="info"><h3>Avatar Stack</h3><p>悬停展开头像组</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="swipe-demo"><div class="swipe-item" onclick="this.classList.toggle('swiped')"><div class="swipe-actions"><div class="swipe-action archive">Archive</div><div class="swipe-action delete">Delete</div></div><div class="swipe-content">Swipe me (click)</div></div></div></div><div class="info"><h3>Swipe Action</h3><p>滑动显示操作按钮</p><span class="tag">CSS</span></div></div>
+      </div>
+    </section>
+
+    <!-- 10 -->
+    <section class="section" id="s10">
+      <div class="section-head"><h2>状态切换</h2></div>
+      <div class="grid">
+        <div class="card"><div class="preview"><div class="theme-demo" onclick="this.classList.toggle('light')"><div class="theme-dark"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg></div><div class="theme-light"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></div></div></div><div class="info"><h3>Theme Toggle</h3><p>圆形扩散主题切换</p><span class="tag">CSS</span></div></div>
+
+        <div class="card"><div class="preview"><div class="err-recovery-demo"><div class="err-recovery-bar" onclick="demoRecover(this)"><span class="er-spinner"></span><span>Error — click to fix</span></div></div></div><div class="info"><h3>Error → Recovery</h3><p>错误到恢复过渡</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="expand-detail-demo" onclick="this.classList.toggle('open')"><div class="ed-summary"><div class="ed-avatar"></div><div class="ed-text">User Name</div></div><div class="ed-detail"><div class="ed-detail-inner">展开后的详细信息内容区域</div></div></div></div><div class="info"><h3>Expand Detail</h3><p>摘要展开为详情</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="online-demo" onclick="this.classList.toggle('offline')"><div class="status-dot-wrap"><div class="status-dot"></div><div class="status-pulse"></div></div><span class="status-label">Online</span></div></div><div class="info"><h3>Online Status</h3><p>在线离线脉冲指示</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="fav-star-demo" onclick="demoStar(this)"><svg width="28" height="28" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div></div><div class="info"><h3>Favorite Star</h3><p>收藏星标弹性切换</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="sf-demo" onclick="demoSF(this)"><div class="sf-icon pending drawing"><svg width="18" height="18" viewBox="0 0 24 24"><path class="sf-path" d="M12 5v7l5 3"/></svg></div></div></div><div class="info"><h3>Success / Fail</h3><p>成功失败状态切换</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="read-demo" onclick="this.classList.toggle('read')"><div class="read-dot"></div><span class="read-text">New message arrived</span></div></div><div class="info"><h3>Read / Unread</h3><p>已读未读标记切换</p><span class="tag">CSS</span></div></div>
+      </div>
+    </section>
+
+    <!-- 11 -->
+    <section class="section" id="s11">
+      <div class="section-head"><h2>氛围与背景</h2></div>
+      <div class="grid">
+        <div class="card"><div class="preview"><div class="gradient-flow-demo"></div></div><div class="info"><h3>Gradient Flow</h3><p>渐变背景缓慢流动</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="glow-pulse-demo"></div></div><div class="info"><h3>Glow Pulse</h3><p>呼吸发光效果</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview" style="position:relative"><canvas class="particle-canvas" id="particleCanvas"></canvas></div><div class="info"><h3>Particles</h3><p>粒子缓慢上升</p><span class="tag">SVG</span></div></div>
+        <div class="card"><div class="preview"><div class="magnetic-demo" id="magneticEl"></div></div><div class="info"><h3>Magnetic Cursor</h3><p>元素被光标吸引</p><span class="tag">JS</span></div></div>
+        <div class="card"><div class="preview"><div class="glow-trace-card" onmousemove="this.style.setProperty('--mx',((event.clientX-this.getBoundingClientRect().left)/this.offsetWidth*100)+'%');this.style.setProperty('--my',((event.clientY-this.getBoundingClientRect().top)/this.offsetHeight*100)+'%')"><div class="glow-trace-inner">Move cursor here</div></div></div><div class="info"><h3>Glow Trace</h3><p>光标跟随边框高光</p><span class="tag">JS</span></div></div>
+        <div class="card"><div class="preview"><div class="light-sweep-demo">PREMIUM</div></div><div class="info"><h3>Light Sweep</h3><p>光线扫过表面</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview" style="perspective:400px" onmousemove="demo3d(event,this)" onmouseleave="this.querySelector('.card3d-demo').style.transform='none'"><div class="card3d-demo">3D Card</div></div><div class="info"><h3>3D Card Hover</h3><p>透视跟随光标倾斜</p><span class="tag">JS</span></div></div>
+        <div class="card"><div class="preview"><div class="scan-demo"><div class="scan-grid"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div></div><div class="info"><h3>Scan Line</h3><p>扫描线从上到下扫过内容</p><span class="tag">CSS</span></div></div>
+      </div>
+    </section>
+
+    <!-- 12 -->
+    <section class="section" id="s12">
+      <div class="section-head"><h2>数据可视化</h2></div>
+      <div class="grid">
+        <div class="card"><div class="preview"><div class="bar-chart"><div class="bar-col" style="--h:70%"></div><div class="bar-col" style="--h:45%"></div><div class="bar-col" style="--h:85%"></div><div class="bar-col" style="--h:55%"></div><div class="bar-col" style="--h:90%"></div><div class="bar-col" style="--h:40%"></div></div></div><div class="info"><h3>Bar Chart Rise</h3><p>柱状图从底部升起</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><svg class="donut-chart" viewBox="0 0 48 48"><circle class="donut-bg" cx="24" cy="24" r="18"/><circle class="donut-fg" cx="24" cy="24" r="18"/><circle class="donut-fg2" cx="24" cy="24" r="18" stroke-dashoffset="73"/></svg></div><div class="info"><h3>Donut Chart</h3><p>环形图弧线绘制</p><span class="tag">SVG</span></div></div>
+        <div class="card"><div class="preview"><div class="gauge-demo"><svg viewBox="0 0 80 50"><path class="gauge-arc-bg" d="M8 40 A32 32 0 0 1 72 40"/><path class="gauge-arc-fg" d="M8 40 A32 32 0 0 1 72 40"/><line class="gauge-needle-line" x1="40" y1="40" x2="40" y2="10"/><circle class="gauge-needle-dot" cx="40" cy="40" r="3"/></svg></div></div><div class="info"><h3>Gauge Meter</h3><p>仪表盘指针旋转</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="sparkline-demo"><svg viewBox="0 0 120 58" preserveAspectRatio="none"><defs><linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--accent)" stop-opacity=".34"/><stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/></linearGradient><clipPath id="sparkClip"><rect x="0" y="0" width="0" height="58"><animate attributeName="width" values="0;120;120" keyTimes="0;.7;1" dur="2.2s" repeatCount="indefinite"/></rect></clipPath></defs><g clip-path="url(#sparkClip)"><path class="sparkline-area" d="M0 58 L0 38 L15 32 L30 39 L45 20 L60 27 L75 14 L90 22 L105 11 L120 16 L120 58 Z"/><path class="sparkline-path" d="M0 38 L15 32 L30 39 L45 20 L60 27 L75 14 L90 22 L105 11 L120 16"/></g></svg></div></div><div class="info"><h3>Sparkline Draw</h3><p>迷你折线图描边</p><span class="tag">SVG</span></div></div>
+        <div class="card"><div class="preview"><div class="counter-card"><div class="counter-val" id="counterCard">0</div><div class="counter-lbl">Active Users</div><div class="counter-trend">+12.5%</div></div></div><div class="info"><h3>Counter Card</h3><p>统计卡片数字滚动</p><span class="tag">JS</span></div></div>
+        <div class="card"><div class="preview"><div class="hbar-chart"><div class="hbar" style="width:92%"></div><div class="hbar" style="width:74%"></div><div class="hbar" style="width:58%"></div><div class="hbar" style="width:46%"></div><div class="hbar" style="width:34%"></div></div></div><div class="info"><h3>Horizontal Bar Reveal</h3><p>横向条形依次展开</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="scrubber-demo"><svg viewBox="0 0 180 92"><path class="scrub-base" pathLength="100" d="M4 66 L23 55 L42 61 L61 42 L80 49 L99 31 L118 38 L137 24 L156 34 L176 18"/><path class="scrub-active" pathLength="100" d="M4 66 L23 55 L42 61 L61 42 L80 49 L99 31 L118 38 L137 24 L156 34 L176 18"/><g><line class="scrub-guide" x1="0" y1="0" x2="0" y2="64"/><circle class="scrub-dot" cx="0" cy="0" r="5.5"/><text class="scrub-value" x="-6" y="-10">70</text><animateMotion dur="2.8s" repeatCount="indefinite" path="M4 66 L23 55 L42 61 L61 42 L80 49 L99 31 L118 38 L137 24 L156 34 L176 18" keyPoints="0;1;1" keyTimes="0;.68;1" calcMode="linear"/></g></svg></div></div><div class="info"><h3>Scrubber Line</h3><p>拖动播放头取值</p><span class="tag">SVG</span></div></div>
+        <div class="card"><div class="preview"><svg class="radial-bars" viewBox="0 0 80 80"><circle class="track" cx="40" cy="40" r="31"/><circle class="track" cx="40" cy="40" r="23"/><circle class="track" cx="40" cy="40" r="15"/><circle class="ring r1" pathLength="100" style="--off:26" cx="40" cy="40" r="31"/><circle class="ring r2" pathLength="100" style="--off:38" cx="40" cy="40" r="23"/><circle class="ring r3" pathLength="100" style="--off:54" cx="40" cy="40" r="15"/></svg></div><div class="info"><h3>Radial Bars</h3><p>多条进度环叠加</p><span class="tag">SVG</span></div></div>
+        <div class="card"><div class="preview"><div class="scatter-chart"><svg viewBox="0 0 160 88"><line class="scatter-axis" x1="14" y1="8" x2="14" y2="74"/><line class="scatter-axis" x1="14" y1="74" x2="146" y2="74"/><circle class="scatter-point" style="--d:0s" cx="24" cy="68" r="2.1"/><circle class="scatter-point" style="--d:.04s" cx="34" cy="60" r="2.2"/><circle class="scatter-point" style="--d:.08s" cx="44" cy="63" r="2"/><circle class="scatter-point" style="--d:.12s" cx="54" cy="52" r="2.4"/><circle class="scatter-point" style="--d:.16s" cx="65" cy="48" r="2.2"/><circle class="scatter-point" style="--d:.2s" cx="76" cy="55" r="2.1"/><circle class="scatter-point" style="--d:.24s" cx="85" cy="40" r="2.5"/><circle class="scatter-point" style="--d:.28s" cx="94" cy="35" r="2.2"/><circle class="scatter-point" style="--d:.32s" cx="103" cy="43" r="2.3"/><circle class="scatter-point" style="--d:.36s" cx="112" cy="31" r="2.4"/><circle class="scatter-point" style="--d:.4s" cx="121" cy="38" r="2.1"/><circle class="scatter-point" style="--d:.44s" cx="132" cy="26" r="2.4"/><circle class="scatter-point" style="--d:.48s" cx="140" cy="34" r="2.2"/></svg></div></div><div class="info"><h3>Scatter Pop</h3><p>散点按分布弹入</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="density-chart"><svg viewBox="0 0 160 76"><defs><clipPath id="densityClip"><rect x="0" y="0" width="0" height="76"><animate attributeName="width" values="0;160;160" keyTimes="0;.68;1" dur="2.5s" repeatCount="indefinite"/></rect></clipPath></defs><g clip-path="url(#densityClip)"><path class="density-fill" fill="#d7d7dc" d="M4 66 C28 66 36 62 46 34 C56 6 76 6 86 34 C96 62 110 66 156 66 L156 72 L4 72 Z"/><path class="density-fill" fill="#8a8a94" d="M4 66 C40 66 56 62 68 42 C82 18 104 18 118 42 C130 62 140 66 156 66 L156 72 L4 72 Z"/><path class="density-path" stroke="#f4f4f5" d="M4 66 C28 66 36 62 46 34 C56 6 76 6 86 34 C96 62 110 66 156 66"/><path class="density-path" stroke="#8a8a94" d="M4 66 C40 66 56 62 68 42 C82 18 104 18 118 42 C130 62 140 66 156 66"/></g></svg></div></div><div class="info"><h3>Density Curve</h3><p>平滑分布曲线对比</p><span class="tag">SVG</span></div></div>
+        <div class="card"><div class="preview"><div class="pie-demo"></div></div><div class="info"><h3>Pie Slice Reveal</h3><p>少量占比扇区展开</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="radar-demo"><svg viewBox="0 0 100 100"><polygon class="radar-grid" points="50,8 87,29 87,71 50,92 13,71 13,29"/><polygon class="radar-grid" points="50,22 75,36 75,64 50,78 25,64 25,36"/><line class="radar-grid" x1="50" y1="8" x2="50" y2="92"/><line class="radar-grid" x1="13" y1="29" x2="87" y2="71"/><line class="radar-grid" x1="87" y1="29" x2="13" y2="71"/><polygon class="radar-shape" points="50,18 72,38 78,68 50,72 28,64 31,39"/></svg></div></div><div class="info"><h3>Radar Sweep</h3><p>多维评分多边形扩展</p><span class="tag">SVG</span></div></div>
+      </div>
+    </section>
+
+    <!-- 13 -->
+    <section class="section" id="s13">
+      <div class="section-head"><h2>入场与退场</h2></div>
+      <div class="grid">
+        <div class="card"><div class="preview"><div class="fade-demo"></div></div><div class="info"><h3>Fade In</h3><p>透明到不透明</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="slide-up-demo"></div></div><div class="info"><h3>Slide Up</h3><p>从下方滑入淡入</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="scale-in-demo"></div></div><div class="info"><h3>Scale In</h3><p>缩放放大淡入</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="spring-demo"></div></div><div class="info"><h3>Spring In</h3><p>弹性回弹入场</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="stagger-demo"><span></span><span></span><span></span><span></span><span></span></div></div><div class="info"><h3>Stagger</h3><p>多元素依次入场</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="blur-demo"></div></div><div class="info"><h3>Blur In</h3><p>模糊到清晰淡入</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="slide-h-demo"></div></div><div class="info"><h3>Slide In</h3><p>横向滑入淡入</p><span class="tag">CSS</span></div></div>
+        <div class="card"><div class="preview"><div class="collapse-demo"><div class="collapse-bar">Header <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="vertical-align:middle"><path d="M2 3.5L5 6.5L8 3.5"/></svg></div><div class="collapse-body"><div class="collapse-body-inner">Expanded content</div></div></div></div><div class="info"><h3>Collapse</h3><p>高度折叠展开</p><span class="tag">CSS</span></div></div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>Motion Ref — AI Agent Skill for UI Motion Design</p>
+      <p class="footer-sub">MIT License / <a href="https://github.com/joepUI/motion-ref-skill" target="_blank">GitHub</a></p>
+    </footer>
+  </main>
+</div>
+
+<div class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M9 14V4M5 7l4-4 4 4"/></svg>
+</div>
+
+<script>
+
+// ── Back to top ──
+const backTop=document.getElementById('backTop');
+window.addEventListener('scroll',()=>{backTop.classList.toggle('show',window.scrollY>400)},{passive:true});
+
+const links=document.querySelectorAll('.sidebar nav a'),sects=document.querySelectorAll('.section');
+const sideObs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.classList.remove('active'));const a=document.querySelector(`.sidebar nav a[href="#${e.target.id}"]`);if(a)a.classList.add('active')}})},{rootMargin:'-20% 0px -70% 0px'});sects.forEach(s=>sideObs.observe(s));
+
+// ── Math Curve Loaders ──
+(function(){
+const NS='http://www.w3.org/2000/svg';
+const curves=[
+{id:'mlRose2',k:2,pc:50,trail:.3,dur:5200,rot:28000,pulse:4300,sw:3.5,
+ pt(p,s){const t=p*Math.PI*2,a=9.2+s*.6,r=a*(.72+s*.28)*Math.cos(2*t);return{x:50+Math.cos(t)*r*3.25,y:50+Math.sin(t)*r*3.25}},rotate:true},
+{id:'mlRose3',k:3,pc:50,trail:.31,dur:5300,rot:28000,pulse:4400,sw:3.5,
+ pt(p,s){const t=p*Math.PI*2,a=9.2+s*.6,r=a*(.72+s*.28)*Math.cos(3*t);return{x:50+Math.cos(t)*r*3.25,y:50+Math.sin(t)*r*3.25}},rotate:true},
+{id:'mlLemniscate',pc:50,trail:.4,dur:5600,rot:34000,pulse:5000,sw:3.8,
+ pt(p,s){const t=p*Math.PI*2,sc=20+s*7,d=1+Math.sin(t)**2;return{x:50+sc*Math.cos(t)/d,y:50+sc*Math.sin(t)*Math.cos(t)/d}},rotate:false}
+];
+function buildPath(c,s){let d='';for(let i=0;i<=300;i++){const p=c.pt(i/300,s);d+=(i===0?'M':'L')+p.x.toFixed(1)+' '+p.y.toFixed(1)}return d}
+curves.forEach(c=>{
+const el=document.getElementById(c.id);if(!el)return;
+const svg=el.querySelector('svg');
+const g=document.createElementNS(NS,'g');
+const path=document.createElementNS(NS,'path');
+path.setAttribute('fill','none');path.setAttribute('stroke','rgba(244,244,245,.12)');path.setAttribute('stroke-width',String(c.sw*.6));
+g.appendChild(path);
+const dots=[];
+for(let i=0;i<c.pc;i++){const ci=document.createElementNS(NS,'circle');ci.setAttribute('fill','#f4f4f5');g.appendChild(ci);dots.push(ci)}
+svg.appendChild(g);
+const start=performance.now(),phase=Math.random();
+function tick(now){
+const time=now-start;
+const prog=((time+phase*c.dur)%c.dur)/c.dur;
+const pa=((time+phase*c.pulse)%c.pulse)/c.pulse;
+const s=.52+((Math.sin(pa*Math.PI*2+.55)+1)/2)*.48;
+const rot=c.rotate?-((time+phase*c.rot)%c.rot)/c.rot*360:0;
+g.setAttribute('transform','rotate('+rot.toFixed(1)+' 50 50)');
+path.setAttribute('d',buildPath(c,s));
+dots.forEach((d,i)=>{
+const off=i/(c.pc-1);
+let pp=prog-off*c.trail;pp=pp-Math.floor(pp);
+const pt=c.pt(pp,s);
+const fade=Math.pow(1-off,.56);
+d.setAttribute('cx',pt.x.toFixed(1));d.setAttribute('cy',pt.y.toFixed(1));
+d.setAttribute('r',(0.6+fade*2).toFixed(1));d.setAttribute('opacity',(0.04+fade*.96).toFixed(2));
+});
+requestAnimationFrame(tick)}
+requestAnimationFrame(tick);
+});
+})();
+
+function createRipple(e){const b=e.currentTarget,r=b.getBoundingClientRect(),d=Math.max(r.width,r.height),c=document.createElement('span');c.className='ripple-circle';c.style.width=c.style.height=d+'px';c.style.left=(e.clientX-r.left-d/2)+'px';c.style.top=(e.clientY-r.top-d/2)+'px';b.appendChild(c);c.addEventListener('animationend',()=>c.remove())}
+function demoCheck(b){b.classList.add('done');setTimeout(()=>b.classList.remove('done'),1800)}
+function demoShake(b){b.classList.add('shaking');setTimeout(()=>b.classList.remove('shaking'),500)}
+function demoSubmit(b){b.classList.add('loading');setTimeout(()=>b.classList.remove('loading'),2000)}
+function demoCtxClick(e,a){e.preventDefault();const m=a.querySelector('.ctx-menu'),r=a.getBoundingClientRect();m.style.left=Math.min(e.clientX-r.left,r.width-100)+'px';m.style.top=Math.min(e.clientY-r.top,r.height-80)+'px';a.classList.add('show');setTimeout(()=>a.classList.remove('show'),1500)}
+document.addEventListener('click',e=>{document.querySelectorAll('.dd-area.show').forEach(el=>{if(!el.contains(e.target))el.classList.remove('show')})});
+
+// ── Command Palette ──
+(function(){
+  const cp=document.getElementById('cmdPalette');if(!cp)return;
+  const trigger=cp.querySelector('.cmd-trigger');
+  trigger.addEventListener('click',e=>{e.stopPropagation();cp.classList.add('show')});
+  cp.addEventListener('click',e=>{if(e.target===cp||e.target.classList.contains('cmd-overlay'))cp.classList.remove('show')});
+  cp.querySelector('.cmd-input').addEventListener('click',e=>e.stopPropagation());
+})();
+
+// ── 6.6 Radio ──
+function demoRadio(item){item.parentElement.querySelectorAll('.radio-item').forEach(r=>r.classList.remove('selected'));item.classList.add('selected')}
+
+// ── 7.3 Number Counter ──
+(function(){const el=document.querySelector('.num-counter');if(!el)return;const target=+el.dataset.target;let start=0;function run(){const now=performance.now(),dur=2000;if(!run.t0)run.t0=now;const p=Math.min((now-run.t0)/dur,1);const ease=1-Math.pow(1-p,3);el.textContent=Math.floor(ease*target).toLocaleString();if(p<1)requestAnimationFrame(run);else{el.textContent=target.toLocaleString();setTimeout(()=>{run.t0=0;el.textContent='0';requestAnimationFrame(run)},2000)}}requestAnimationFrame(run)})();
+
+// ── 7.6 Scramble ──
+(function(){const el=document.querySelector('.scramble-text');if(!el)return;const final=el.textContent;const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';function scramble(){let iter=0;const id=setInterval(()=>{el.textContent=final.split('').map((c,i)=>i<iter?c:chars[Math.floor(Math.random()*chars.length)]).join('');iter+=1/3;if(iter>=final.length){clearInterval(id);el.textContent=final;setTimeout(scramble,2000)}},40)}scramble()})();
+
+// ── 8.1 Scroll Reveal (within container) ──
+(function(){const box=document.getElementById('srDemo');if(!box)return;const items=box.querySelectorAll('.sr-item');let obs;function setup(){obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}})},{root:box,threshold:.3});items.forEach(i=>obs.observe(i))}setup();box.addEventListener('scroll',()=>{if(box.scrollTop<5){items.forEach(i=>i.classList.remove('visible'));obs.disconnect();setup()}},{passive:true})})();
+
+// ── 10.3 List Add/Remove ──
+let listCount=3;
+function demoListToggle(preview){
+  const demo=preview.querySelector('.list-demo');
+  if(demo.children.length>=5){
+    const last=demo.lastElementChild;
+    last.style.animation='listSlideOut .3s ease forwards';
+    last.addEventListener('animationend',()=>last.remove());
+  } else {
+    listCount++;
+    const item=document.createElement('div');
+    item.className='list-item';
+    item.textContent='Item '+listCount;
+    item.style.animation='listFadeIn .4s ease both';
+    demo.appendChild(item);
+  }
+}
+
+// ── 10.4 Drag Reorder ──
+(function(){
+  const demo=document.getElementById('dragDemo');
+  if(!demo)return;
+  let dragEl=null;
+  demo.addEventListener('dragstart',e=>{
+    dragEl=e.target.closest('.drag-item');
+    if(!dragEl)return;
+    dragEl.classList.add('dragging');
+    e.dataTransfer.effectAllowed='move';
+  });
+  demo.addEventListener('dragover',e=>{
+    e.preventDefault();
+    const after=getDragAfter(demo,e.clientY);
+    if(after){demo.insertBefore(dragEl,after)}
+    else{demo.appendChild(dragEl)}
+  });
+  demo.addEventListener('dragend',()=>{
+    if(dragEl)dragEl.classList.remove('dragging');
+    dragEl=null;
+  });
+  function getDragAfter(container,y){
+    const els=[...container.querySelectorAll('.drag-item:not(.dragging)')];
+    return els.reduce((closest,child)=>{
+      const box=child.getBoundingClientRect();
+      const offset=y-box.top-box.height/2;
+      if(offset<0&&offset>closest.offset)return{offset,element:child};
+      return closest;
+    },{offset:-Infinity}).element;
+  }
+})();
+
+// ── 10.5 Accordion ──
+function demoAccordion(item){item.classList.toggle('open')}
+
+// ── 10.6 Infinite scroll demo ──
+(function(){const box=document.getElementById('infDemo');if(!box)return;let c=0,loading=false;const loader=document.createElement('div');loader.className='inf-loader';loader.textContent='Loading...';function addItems(n){if(loader.parentNode)box.removeChild(loader);for(let i=0;i<n;i++){c++;const d=document.createElement('div');d.className='inf-item';d.style.animationDelay=(i*.08)+'s';box.appendChild(d)}loading=false}addItems(5);box.addEventListener('scroll',function(){if(!loading&&box.scrollTop+box.clientHeight>=box.scrollHeight-10){loading=true;box.appendChild(loader);setTimeout(()=>addItems(3),500)}})})();
+
+// ── 12.3 Particles ──
+(function(){const cv=document.getElementById('particleCanvas');if(!cv)return;const ctx=cv.getContext('2d');function resize(){const r=cv.parentElement.getBoundingClientRect();cv.width=r.width;cv.height=r.height}resize();const ps=[];for(let i=0;i<40;i++)ps.push({x:Math.random()*cv.width,y:Math.random()*cv.height,r:Math.random()*2+1,vy:-(Math.random()*.3+.1),vx:(Math.random()-.5)*.2,o:Math.random()*.5+.2});function draw(){ctx.clearRect(0,0,cv.width,cv.height);ps.forEach(p=>{p.y+=p.vy;p.x+=p.vx;if(p.y<-5){p.y=cv.height+5;p.x=Math.random()*cv.width}ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(244,244,245,${p.o})`;ctx.fill()});requestAnimationFrame(draw)}draw()})();
+
+// ── 12.4 Magnetic cursor ──
+(function(){const el=document.getElementById('magneticEl');if(!el)return;const preview=el.closest('.preview');preview.addEventListener('mousemove',e=>{const r=preview.getBoundingClientRect();const cx=r.left+r.width/2,cy=r.top+r.height/2;const dx=(e.clientX-cx)*.12,dy=(e.clientY-cy)*.12;el.style.transform=`translate(${dx}px,${dy}px)`});preview.addEventListener('mouseleave',()=>{el.style.transform='translate(0,0)'})})();
+
+// ── 3D Card Hover ──
+function demo3d(e,preview){
+  const card=preview.querySelector('.card3d-demo');
+  const r=preview.getBoundingClientRect();
+  const x=(e.clientX-r.left)/r.width-.5;
+  const y=(e.clientY-r.top)/r.height-.5;
+  card.style.transform=`rotateY(${x*20}deg) rotateX(${-y*20}deg)`;
+}
+
+// ── Number Pop-in replay ──
+(function(){
+  const el=document.getElementById('numPopin');
+  if(!el)return;
+  function replay(){
+    el.classList.remove('active');
+    requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('active')));
+  }
+  replay();
+  setInterval(replay,3500);
+})();
+
+// ── Confetti Button ──
+function demoConfetti(btn){
+  const colors=['#f4f4f5','#fafafa','#d4d4d8','#e4e4e7','#a1a1aa'];
+  for(let i=0;i<12;i++){
+    const p=document.createElement('span');p.className='confetti-particle';
+    const angle=Math.random()*Math.PI*2;
+    const dist=40+Math.random()*40;
+    p.style.cssText=`--cx:${Math.cos(angle)*dist}px;--cy:${Math.sin(angle)*dist}px;background:${colors[i%colors.length]};left:50%;top:50%;`;
+    btn.appendChild(p);p.addEventListener('animationend',()=>p.remove());
+  }
+}
+
+// ── OTP Input ──
+function demoOtp(input){
+  input.value=input.value.slice(-1);
+  input.classList.toggle('filled',Boolean(input.value));
+  const next=input.nextElementSibling;
+  if(input.value&&next&&next.classList.contains('otp-box'))next.focus();
+}
+function demoOtpKeydown(input,e){
+  if(e.key!=='Backspace'||input.value)return;
+  const prev=input.previousElementSibling;
+  if(prev&&prev.classList.contains('otp-box')){
+    e.preventDefault();
+    prev.value='';
+    prev.classList.remove('filled');
+    prev.focus();
+  }
+}
+
+// ── Range Slider ──
+function demoRange(e,track){
+  e.preventDefault();
+  const update=(ev)=>{
+    const r=track.getBoundingClientRect();
+    let pct=Math.max(0,Math.min(1,(ev.clientX-r.left)/r.width));
+    pct=Math.round(pct*100);
+    track.querySelector('.range-fill').style.width=pct+'%';
+    track.querySelector('.range-thumb').style.left=pct+'%';
+    track.closest('.range-demo').querySelector('.range-val').textContent=pct;
+  };
+  update(e);
+  const move=(ev)=>update(ev);
+  const up=()=>{document.removeEventListener('mousemove',move);document.removeEventListener('mouseup',up)};
+  document.addEventListener('mousemove',move);
+  document.addEventListener('mouseup',up);
+}
+
+// ── Step Indicator ──
+function demoSteps(container){
+  const dots=[...container.querySelectorAll('.step-dot')];
+  const lines=[...container.querySelectorAll('.step-line')];
+  const activeIdx=dots.findIndex(d=>d.classList.contains('active'));
+  if(activeIdx<dots.length-1){
+    dots[activeIdx].classList.remove('active');
+    dots[activeIdx].classList.add('done');
+    dots[activeIdx].innerHTML='<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>';
+    if(lines[activeIdx])lines[activeIdx].classList.add('done');
+    dots[activeIdx+1].classList.add('active');
+  } else {
+    dots.forEach((d,i)=>{d.classList.remove('done','active');d.textContent=i+1});
+    lines.forEach(l=>l.classList.remove('done'));
+    dots[0].classList.add('done');
+    dots[0].innerHTML='<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>';
+    dots[1].classList.add('active');
+    lines[0].classList.add('done');
+  }
+}
+
+// ── Morphing Icon ──
+const morphPaths=['M8 5v14l11-7z','M6 4h4v16H6zm8 0h4v16h-4z'];
+function demoMorph(svg){
+  const path=svg.querySelector('path');
+  const cur=path.getAttribute('d');
+  const next=cur===morphPaths[0]?morphPaths[1]:morphPaths[0];
+  path.setAttribute('d',next);
+}
+
+// ── Heart Like ──
+function demoHeart(el){
+  if(el.classList.contains('liked')){el.classList.remove('liked','pop');return}
+  el.classList.add('pop');
+  el.addEventListener('animationend',()=>{el.classList.remove('pop');el.classList.add('liked')},{once:true});
+}
+// ── Copy Check ──
+function demoCopyCheck(el){
+  if(el.classList.contains('copied'))return;
+  el.classList.add('copied');
+  setTimeout(()=>el.classList.remove('copied'),1500);
+}
+// ── Bell Shake ──
+function demoBell(el){
+  el.classList.remove('ringing');
+  void el.offsetWidth;
+  el.classList.add('ringing');
+  el.addEventListener('animationend',()=>el.classList.remove('ringing'),{once:true});
+}
+
+function demoStar(el){
+  el.classList.toggle('active');
+  el.classList.add('pop');
+  el.addEventListener('animationend',()=>el.classList.remove('pop'),{once:true});
+}
+function demoSF(el){
+  const icon=el.querySelector('.sf-icon');
+  const path=el.querySelector('.sf-path');
+  icon.classList.remove('drawing');
+  if(icon.classList.contains('pending')){
+    icon.classList.remove('pending');icon.classList.add('success');
+    path.setAttribute('d','M5 13l4 4L19 7');
+  } else if(icon.classList.contains('success')){
+    icon.classList.remove('success');icon.classList.add('fail');
+    path.setAttribute('d','M6 6l12 12M18 6l-12 12');
+  } else {
+    icon.classList.remove('fail');icon.classList.add('pending');
+    path.setAttribute('d','M12 5v7l5 3');
+  }
+  void path.offsetWidth;
+  icon.classList.add('drawing');
+}
+
+// ── Confetti Celebration ──
+function demoCelebrate(container){
+  const colors=['#f4f4f5','#fafafa','#d4d4d8','#e4e4e7','#a1a1aa','#c4c4c7'];
+  const shapes=['6px','4px','8px'];
+  for(let i=0;i<25;i++){
+    const p=document.createElement('div');p.className='celebrate-particle';
+    const angle=Math.random()*Math.PI*2;
+    const dist=50+Math.random()*60;
+    const size=shapes[Math.floor(Math.random()*shapes.length)];
+    p.style.cssText=`--tx:${Math.cos(angle)*dist}px;--ty:${Math.sin(angle)*dist-30}px;--rot:${Math.random()*720}deg;width:${size};height:${size};background:${colors[i%colors.length]};border-radius:${Math.random()>.5?'50%':'2px'};left:50%;top:50%;`;
+    container.appendChild(p);
+    p.addEventListener('animationend',()=>p.remove());
+  }
+}
+
+// ── Flip Counter (countdown) ──
+(function(){
+  const digits=document.querySelectorAll('.flip-digit');
+  if(!digits.length)return;
+  let sec=300;
+  function tick(){
+    sec--;
+    if(sec<0)sec=300;
+    const m=Math.floor(sec/60),s=sec%60;
+    const vals=[Math.floor(m/10),m%10,':',Math.floor(s/10),s%10];
+    digits.forEach((d,i)=>{
+      const span=d.querySelector('span');
+      const nv=String(vals[i]);
+      if(span.textContent!==nv){
+        d.classList.add('flip-out');
+        setTimeout(()=>{
+          span.textContent=nv;
+          d.classList.remove('flip-out');
+          d.classList.add('flip-in');
+          setTimeout(()=>d.classList.remove('flip-in'),250);
+        },150);
+      }
+    });
+  }
+  setInterval(tick,1000);
+})();
+
+// ── Sticky Shrink ──
+(function(){const box=document.querySelector('.sticky-demo');if(!box)return;const h=box.querySelector('.sticky-header');box.addEventListener('scroll',()=>{h.classList.toggle('shrunk',box.scrollTop>10)},{passive:true})})();
+
+// ── Error Recovery ──
+function demoRecover(el){
+  if(el.classList.contains('ok')){el.classList.remove('ok');el.querySelector('span:last-child').textContent='Error — click to fix';return}
+  if(el.classList.contains('recovering'))return;
+  el.classList.add('recovering');el.querySelector('span:last-child').textContent='Recovering...';
+  setTimeout(()=>{el.classList.remove('recovering');el.classList.add('ok');el.querySelector('span:last-child').textContent='Recovered!'},1500);
+}
+
+// ── Fill Progress (long press) ──
+(function(){
+  const btn=document.querySelector('.fill-btn');
+  if(!btn)return;
+  let iv,pct=0;
+  function start(){pct=0;btn.classList.remove('filled');btn.textContent='Hold Me';iv=setInterval(()=>{pct=Math.min(pct+2,100);btn.style.setProperty('--fill',pct+'%');if(pct>=100){clearInterval(iv);btn.classList.add('filled');btn.textContent='Done!';setTimeout(reset,1500)}},30)}
+  function stop(){clearInterval(iv);if(pct<100){pct=0;btn.style.setProperty('--fill','0%')}}
+  function reset(){btn.classList.remove('filled');btn.textContent='Hold Me';pct=0;btn.style.setProperty('--fill','0%')}
+  btn.addEventListener('mousedown',start);btn.addEventListener('mouseup',stop);btn.addEventListener('mouseleave',stop);
+})();
+
+// ── Counter Card ──
+(function(){
+  const el=document.getElementById('counterCard');
+  if(!el)return;
+  const target=8423;
+  function run(){
+    const dur=2000;let t0=0;
+    function tick(now){
+      if(!t0)t0=now;
+      const p=Math.min((now-t0)/dur,1);
+      const ease=1-Math.pow(1-p,3);
+      el.textContent=Math.floor(ease*target).toLocaleString();
+      if(p<1)requestAnimationFrame(tick);
+      else setTimeout(()=>{el.textContent='0';t0=0;requestAnimationFrame(tick)},2500);
+    }
+    requestAnimationFrame(tick);
+  }
+  run();
+})();
+
+// ── Click hint indicator ──
+document.querySelectorAll('.card').forEach(card=>{
+  const p=card.querySelector('.preview');
+  if(!p)return;
+  const hasClick=p.querySelector('[onclick]')||p.getAttribute('onclick')||p.querySelector('button')||p.querySelector('input')||p.querySelector('[onkeydown]');
+  if(hasClick)card.setAttribute('data-click','');
+});
+
+// ── Code viewer ──
+const codeSnippets={
+  'Spinner':`.spinner {\n  width: 36px;\n  height: 36px;\n  border: 3px solid #2a2a32;\n  border-top-color: #f4f4f5;\n  border-radius: 50%;\n  animation: spin .8s linear infinite;\n}\n@keyframes spin {\n  to { transform: rotate(360deg) }\n}`,
+  'Dots Pulse':`.dots span {\n  width: 10px; height: 10px;\n  background: #f4f4f5;\n  border-radius: 50%;\n  animation: pulse 1.4s ease-in-out infinite;\n}\n.dots span:nth-child(2) { animation-delay: .15s }\n.dots span:nth-child(3) { animation-delay: .3s }\n@keyframes pulse {\n  0%,80%,100% { transform: scale(.4); opacity: .4 }\n  40% { transform: scale(1); opacity: 1 }\n}`,
+  'Skeleton Shimmer':`.skeleton {\n  background: linear-gradient(90deg,\n    #eee 25%, #f5f5f5 50%, #eee 75%);\n  background-size: 200% 100%;\n  animation: shimmer 1.5s infinite;\n}\n@keyframes shimmer {\n  0%   { background-position: 200% 0 }\n  100% { background-position: -200% 0 }\n}`,
+  'Fade In':`.fade-in {\n  animation: fadeIn 300ms ease;\n}\n@keyframes fadeIn {\n  from { opacity: 0 }\n  to   { opacity: 1 }\n}`,
+  'Slide Up':`.slide-up {\n  animation: slideUp 400ms ease-out;\n}\n@keyframes slideUp {\n  from { opacity: 0; transform: translateY(20px) }\n  to   { opacity: 1; transform: translateY(0) }\n}`,
+  'Spring In':`.spring-in {\n  animation: springIn 500ms\n    cubic-bezier(.34, 1.56, .64, 1);\n}\n@keyframes springIn {\n  from { opacity: 0; transform: scale(.5) }\n  to   { opacity: 1; transform: scale(1) }\n}`,
+  'Press Scale':`button:active {\n  transform: scale(.96);\n  transition: transform 80ms ease;\n}`,
+  'Ripple':`.ripple {\n  position: relative; overflow: hidden;\n}\n/* JS: on click */\nconst d = Math.max(w, h);\ncircle.style.cssText = \`\n  width:\${d}px; height:\${d}px;\n  left:\${x}px; top:\${y}px;\n  position:absolute; border-radius:50%;\n  background:rgba(255,255,255,.35);\n  transform:scale(0);\n  animation:ripple .6s ease-out forwards;\n\`;\n@keyframes ripple { to { transform:scale(4); opacity:0 } }`,
+  'Toggle Switch':`.track {\n  width: 44px; height: 24px;\n  background: #ccc;\n  border-radius: 12px;\n  transition: background .25s;\n}\n.knob {\n  width: 20px; height: 20px;\n  background: #fff; border-radius: 50%;\n  transition: transform .25s\n    cubic-bezier(.34, 1.56, .64, 1);\n}\n.track.on { background: #f4f4f5 }\n.track.on .knob {\n  transform: translateX(20px);\n}`,
+  'Gradient Flow':`.gradient {\n  border: 1px solid #4c4d54;\n  background: linear-gradient(130deg,\n    #24252a 0%, #3a3b41 28%,\n    #b6b7bd 48%, #4d4e55 66%,\n    #1d1e22 100%);\n  background-size: 240% 240%;\n  box-shadow:\n    inset 0 1px 0 rgba(255,255,255,.16),\n    inset 0 -18px 28px rgba(0,0,0,.18);\n  animation: flow 7s ease-in-out infinite;\n}\n@keyframes flow {\n  0%   { background-position: 0% 45% }\n  50%  { background-position: 100% 55% }\n  100% { background-position: 0% 45% }\n}`,
+  'Typewriter':`.typewriter {\n  overflow: hidden;\n  white-space: nowrap;\n  border-right: 2px solid;\n  width: 0;\n  animation:\n    type 3s steps(12) infinite,\n    blink .6s step-end infinite alternate;\n}\n@keyframes type {\n  0%,100% { width: 0 }\n  40%,80% { width: 12ch }\n}\n@keyframes blink {\n  50% { border-color: transparent }\n}`,
+  'Hamburger / Close':`.hamburger span {\n  display: block; height: 2px;\n  background: #fff; border-radius: 1px;\n  transition: all .3s ease;\n}\n/* open state */\n.open span:nth-child(1) {\n  top: 8px; transform: rotate(45deg);\n}\n.open span:nth-child(2) { opacity: 0 }\n.open span:nth-child(3) {\n  top: 8px; transform: rotate(-45deg);\n}`,
+  'Error Shake':`.shake {\n  animation: shake .4s ease;\n}\n@keyframes shake {\n  0%,100% { transform: translateX(0) }\n  20%,60% { transform: translateX(-6px) }\n  40%,80% { transform: translateX(6px) }\n}`,
+  'Hover Glow':`button:hover {\n  box-shadow:\n    0 0 20px rgba(244,244,245,.4),\n    0 0 48px rgba(244,244,245,.12);\n  transition: box-shadow 200ms;\n}`,
+  'Modal':`.overlay {\n  background: rgba(0,0,0,.5);\n  transition: opacity .2s;\n}\n.modal {\n  transform: scale(.95); opacity: 0;\n  transition: all .25s ease-out;\n}\n.show .overlay { opacity: 1 }\n.show .modal {\n  transform: scale(1); opacity: 1;\n}`,
+  'View Transition':`/* CSS */\n::view-transition-old(root) {\n  animation: fade-out .25s;\n}\n::view-transition-new(root) {\n  clip-path: circle(0% at 50% 50%);\n  animation: reveal .4s ease forwards;\n}\n\n/* JS */\ndocument.startViewTransition(() => {\n  updateDOM();\n});`,
+  'Light Sweep':`.sweep::after {\n  content: "";\n  position: absolute;\n  top: 0; left: -100%;\n  width: 60%; height: 100%;\n  background: linear-gradient(110deg,\n    transparent,\n    rgba(255,255,255,.08),\n    transparent);\n  animation: sweep 3s infinite;\n}\n@keyframes sweep {\n  0%       { left: -100% }\n  50%,100% { left: 150% }\n}`,
+
+  // ── 1. Loading ──
+  'Progress Bar':`.bar {\n  height: 6px;\n  background: var(--border);\n  border-radius: 3px;\n  overflow: hidden;\n}\n.bar-fill {\n  height: 100%;\n  background: linear-gradient(90deg,\n    var(--accent2), var(--accent));\n  border-radius: 3px;\n  animation: fill 2.5s ease-in-out infinite;\n}\n@keyframes fill {\n  0%   { width: 0 }\n  50%  { width: 85% }\n  100% { width: 100% }\n}`,
+  'Circular Progress':`<svg viewBox="0 0 48 48">\n  <circle cx="24" cy="24" r="20"\n    fill="none" stroke="#2a2a32"\n    stroke-width="4"/>\n  <circle cx="24" cy="24" r="20"\n    fill="none" stroke="var(--accent)"\n    stroke-width="4"\n    stroke-dasharray="125.6"\n    stroke-dashoffset="125.6"\n    stroke-linecap="round"\n    transform="rotate(-90 24 24)">\n    <animate attributeName="stroke-dashoffset"\n      to="25" dur="2s" fill="freeze"\n      repeatCount="indefinite"/>\n  </circle>\n</svg>`,
+  'Breath Pulse':`.pulse {\n  width: 40px; height: 40px;\n  background: var(--accent);\n  border-radius: 50%;\n  animation: breathe 2.5s ease-in-out infinite;\n}\n@keyframes breathe {\n  0%, 100% {\n    transform: scale(1); opacity: .7;\n  }\n  50% {\n    transform: scale(1.15); opacity: 1;\n  }\n}`,
+  'Skeleton Pulse':`.skel-line {\n  height: 12px;\n  border-radius: 6px;\n  background: var(--border);\n  animation: skelPulse 1.5s\n    ease-in-out infinite;\n}\n@keyframes skelPulse {\n  0%, 100% { opacity: 1 }\n  50%      { opacity: .35 }\n}`,
+  'Spinner Dots':`.spinner-dots {\n  display: flex; gap: 4px;\n}\n.spinner-dots span {\n  width: 8px; height: 8px;\n  background: var(--accent);\n  border-radius: 50%;\n  animation: spinDot 1.2s ease infinite;\n}\n.spinner-dots span:nth-child(2) {\n  animation-delay: .2s;\n}\n.spinner-dots span:nth-child(3) {\n  animation-delay: .4s;\n}\n@keyframes spinDot {\n  0%, 100% { transform: scale(.6); opacity: .3 }\n  50%      { transform: scale(1); opacity: 1 }\n}`,
+
+  // ── 2. Entrance / Exit ──
+  'Scale In':`.scale-in {\n  animation: scaleIn 300ms\n    cubic-bezier(.2, 0, .13, 1.5);\n}\n@keyframes scaleIn {\n  from {\n    opacity: 0;\n    transform: scale(.8);\n  }\n  to {\n    opacity: 1;\n    transform: scale(1);\n  }\n}`,
+  'Stagger':`.stagger > * {\n  opacity: 0;\n  transform: translateY(12px);\n  animation: staggerIn 400ms ease forwards;\n}\n.stagger > *:nth-child(1) { animation-delay: 0ms }\n.stagger > *:nth-child(2) { animation-delay: 60ms }\n.stagger > *:nth-child(3) { animation-delay: 120ms }\n.stagger > *:nth-child(4) { animation-delay: 180ms }\n@keyframes staggerIn {\n  to { opacity: 1; transform: none }\n}`,
+  'Blur In':`.blur-in {\n  animation: blurIn 400ms ease-out;\n}\n@keyframes blurIn {\n  from {\n    opacity: 0;\n    filter: blur(8px);\n    transform: scale(.95);\n  }\n  to {\n    opacity: 1;\n    filter: blur(0);\n    transform: scale(1);\n  }\n}`,
+  'Slide In':`.slide-in {\n  animation: slideIn 350ms ease-out;\n}\n@keyframes slideIn {\n  from {\n    opacity: 0;\n    transform: translateX(-20px);\n  }\n  to {\n    opacity: 1;\n    transform: translateX(0);\n  }\n}`,
+  'Collapse':`:root { --collapse-dur: 300ms }\n.collapse-body {\n  display: grid;\n  grid-template-rows: 0fr;\n  transition: grid-template-rows\n    var(--collapse-dur) ease;\n}\n.collapse-body > div {\n  overflow: hidden;\n}\n.open .collapse-body {\n  grid-template-rows: 1fr;\n}`,
+
+  // ── 3. Buttons ──
+  'Success Check':`.btn.success svg {\n  stroke-dasharray: 20;\n  stroke-dashoffset: 20;\n  animation: draw .4s ease forwards;\n}\n@keyframes draw {\n  to { stroke-dashoffset: 0 }\n}\n.btn.success {\n  background: var(--success);\n  transition: background .25s;\n}`,
+  'Submit Loading':`.btn.loading {\n  pointer-events: none;\n  color: transparent;\n  position: relative;\n}\n.btn.loading::after {\n  content: "";\n  position: absolute;\n  width: 18px; height: 18px;\n  border: 2px solid rgba(255,255,255,.3);\n  border-top-color: #fff;\n  border-radius: 50%;\n  animation: spin .6s linear infinite;\n}`,
+  'Bounce Tap':`.bounce-tap:active {\n  animation: bounceTap 400ms\n    cubic-bezier(.34, 1.56, .64, 1);\n}\n@keyframes bounceTap {\n  0%   { transform: scale(1) }\n  40%  { transform: scale(.9) }\n  100% { transform: scale(1) }\n}`,
+  'Fill Progress':`.fill-btn {\n  position: relative;\n  overflow: hidden;\n}\n.fill-btn::before {\n  content: "";\n  position: absolute;\n  left: 0; top: 0; bottom: 0;\n  width: 0;\n  background: var(--accent);\n  transition: width 2s ease;\n}\n.fill-btn.active::before {\n  width: 100%;\n}`,
+
+  // ── 4. Overlays ──
+  'Bottom Sheet':`.sheet {\n  position: fixed;\n  bottom: 0; left: 0; right: 0;\n  transform: translateY(100%);\n  transition: transform 350ms\n    cubic-bezier(.32, .72, 0, 1);\n  border-radius: 16px 16px 0 0;\n}\n.sheet.open {\n  transform: translateY(0);\n}`,
+  'Dropdown':`.dropdown {\n  transform-origin: top center;\n  transform: scaleY(0);\n  opacity: 0;\n  transition: all 200ms ease;\n}\n.open .dropdown {\n  transform: scaleY(1);\n  opacity: 1;\n}`,
+  'Popover':`.popover {\n  opacity: 0;\n  transform: translateY(4px) scale(.96);\n  transition: all 150ms ease;\n  pointer-events: none;\n}\n.popover.show {\n  opacity: 1;\n  transform: translateY(0) scale(1);\n  pointer-events: auto;\n}`,
+  'Toast':`.toast {\n  animation: toastIn 300ms ease forwards;\n}\n@keyframes toastIn {\n  from {\n    opacity: 0;\n    transform: translateY(16px) scale(.95);\n  }\n  to {\n    opacity: 1;\n    transform: none;\n  }\n}\n.toast.out {\n  animation: toastOut 200ms ease forwards;\n}\n@keyframes toastOut {\n  to { opacity: 0; transform: translateY(-8px) }\n}`,
+  'Alert Slide':`.alert {\n  transform: translateX(120%);\n  transition: transform 350ms\n    cubic-bezier(.32, .72, 0, 1);\n}\n.alert.show {\n  transform: translateX(0);\n}`,
+  'Context Menu':`.ctx-menu {\n  opacity: 0;\n  transform: scale(.9);\n  transform-origin: top left;\n  transition: all 120ms ease;\n}\n.show .ctx-menu {\n  opacity: 1;\n  transform: scale(1);\n}`,
+
+  // ── 5. Navigation ──
+  'Page Slide':`.page-enter {\n  animation: pageIn 400ms ease;\n}\n@keyframes pageIn {\n  from {\n    opacity: 0;\n    transform: translateX(30px);\n  }\n  to {\n    opacity: 1;\n    transform: none;\n  }\n}\n.page-exit {\n  animation: pageOut 300ms ease forwards;\n}\n@keyframes pageOut {\n  to {\n    opacity: 0;\n    transform: translateX(-30px);\n  }\n}`,
+  'Fade Switch':`.fade-switch {\n  position: relative;\n}\n.fade-switch > * {\n  transition: opacity 250ms ease;\n}\n.fade-switch .leaving {\n  opacity: 0;\n  position: absolute;\n}\n.fade-switch .entering {\n  opacity: 1;\n}`,
+  'Shared Element':`.shared {\n  view-transition-name: hero;\n}\n::view-transition-old(hero),\n::view-transition-new(hero) {\n  animation-duration: 350ms;\n  animation-timing-function:\n    cubic-bezier(.2, 0, .13, 1.5);\n}`,
+  'Tab Slide':`.tab-indicator {\n  position: absolute;\n  bottom: 0;\n  height: 2px;\n  background: var(--accent);\n  transition: left 250ms ease,\n    width 250ms ease;\n}`,
+  'Sidebar Push':`.sidebar {\n  transform: translateX(-100%);\n  transition: transform 300ms\n    cubic-bezier(.32, .72, 0, 1);\n}\n.sidebar.open {\n  transform: translateX(0);\n}\n.content {\n  transition: margin-left 300ms\n    cubic-bezier(.32, .72, 0, 1);\n}\n.sidebar.open ~ .content {\n  margin-left: 260px;\n}`,
+
+  // ── 6. Forms ──
+  'Focus Ring':`.input:focus {\n  outline: none;\n  box-shadow:\n    0 0 0 2px var(--bg),\n    0 0 0 4px var(--accent);\n  transition: box-shadow 150ms ease;\n}`,
+  'Label Float':`.float-group {\n  position: relative;\n}\n.float-label {\n  position: absolute;\n  top: 50%; left: 12px;\n  transform: translateY(-50%);\n  transition: all 200ms ease;\n  pointer-events: none;\n  color: var(--text3);\n}\n.input:focus ~ .float-label,\n.input:not(:placeholder-shown) ~ .float-label {\n  top: 4px;\n  font-size: 11px;\n  color: var(--accent);\n}`,
+  'Validation Shake':`.input.invalid {\n  animation: shake .4s\n    cubic-bezier(.36, .07, .19, .97);\n  border-color: var(--error);\n}\n@keyframes shake {\n  10%, 90% { transform: translateX(-1px) }\n  20%, 80% { transform: translateX(2px) }\n  30%, 50%, 70% { transform: translateX(-4px) }\n  40%, 60% { transform: translateX(4px) }\n}`,
+  'Checkbox':`.checkbox {\n  appearance: none;\n  width: 20px; height: 20px;\n  border: 2px solid var(--border);\n  border-radius: 4px;\n  transition: all 200ms ease;\n}\n.checkbox:checked {\n  background: var(--accent);\n  border-color: var(--accent);\n}\n.checkbox:checked::after {\n  content: "";\n  display: block;\n  width: 5px; height: 10px;\n  border: solid #fff;\n  border-width: 0 2px 2px 0;\n  transform: rotate(45deg);\n  animation: checkPop 200ms ease;\n}`,
+  'Radio Select':`.radio {\n  width: 18px; height: 18px;\n  border: 2px solid var(--border);\n  border-radius: 50%;\n  transition: border-color 200ms;\n  position: relative;\n}\n.radio.selected {\n  border-color: var(--accent);\n}\n.radio.selected::after {\n  content: "";\n  width: 8px; height: 8px;\n  background: var(--accent);\n  border-radius: 50%;\n  position: absolute;\n  top: 50%; left: 50%;\n  transform: translate(-50%,-50%) scale(0);\n  animation: radioIn 250ms\n    cubic-bezier(.34,1.56,.64,1) forwards;\n}\n@keyframes radioIn {\n  to { transform: translate(-50%,-50%) scale(1) }\n}`,
+  'Search Expand':`.search {\n  width: 36px;\n  overflow: hidden;\n  transition: width 300ms\n    cubic-bezier(.4, 0, .2, 1);\n  border-radius: 18px;\n}\n.search:focus-within {\n  width: 220px;\n}`,
+
+  // ── 7. Text ──
+  'Fade Up Words':`.word {\n  display: inline-block;\n  opacity: 0;\n  transform: translateY(8px);\n  animation: fadeUpWord 400ms ease forwards;\n}\n.word:nth-child(2) { animation-delay: 80ms }\n.word:nth-child(3) { animation-delay: 160ms }\n@keyframes fadeUpWord {\n  to { opacity: 1; transform: none }\n}`,
+  'Number Counter':`function animateCounter(el, target, dur=2000) {\n  const start = performance.now();\n  (function tick(now) {\n    const t = Math.min((now - start) / dur, 1);\n    const ease = 1 - Math.pow(1 - t, 3);\n    el.textContent =\n      Math.floor(ease * target).toLocaleString();\n    if (t < 1) requestAnimationFrame(tick);\n  })(start);\n}`,
+  'Text Highlight':`.highlight {\n  background: linear-gradient(\n    120deg,\n    var(--accent) 0%,\n    var(--accent) 100%\n  );\n  background-repeat: no-repeat;\n  background-size: 0% 100%;\n  background-position: 0 88%;\n  transition: background-size 600ms ease;\n}\n.highlight.active {\n  background-size: 100% 28%;\n}`,
+  'Ticker':`.ticker {\n  overflow: hidden;\n  height: 1.4em;\n}\n.ticker-track {\n  animation: tickerUp 3s ease infinite;\n}\n@keyframes tickerUp {\n  0%, 20%  { transform: translateY(0) }\n  25%, 45% { transform: translateY(-1.4em) }\n  50%, 70% { transform: translateY(-2.8em) }\n  75%, 95% { transform: translateY(-4.2em) }\n  100%     { transform: translateY(0) }\n}`,
+  'Scramble Text':`function scramble(el) {\n  const final = el.textContent;\n  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";\n  let iter = 0;\n  const id = setInterval(() => {\n    el.textContent = final.split("").map(\n      (c, i) => i < iter\n        ? c\n        : chars[Math.random()*chars.length|0]\n    ).join("");\n    iter += 1/3;\n    if (iter >= final.length) {\n      clearInterval(id);\n      el.textContent = final;\n    }\n  }, 40);\n}`,
+  'Flip Counter':`.flip-digit {\n  display: inline-block;\n  overflow: hidden;\n  height: 1em;\n}\n.flip-digit span {\n  display: block;\n  transition: transform .3s\n    cubic-bezier(.34, 1.56, .64, 1);\n}\n/* JS: on value change */\ndigit.style.transform = "translateY(-2px)";\nsetTimeout(() => {\n  span.textContent = newVal;\n  digit.style.transform = "translateY(0)";\n}, 150);`,
+
+  // ── 8. Scroll ──
+  'Scroll Reveal':`.reveal {\n  opacity: 0;\n  transform: translateY(20px);\n  transition: all 600ms ease;\n}\n.reveal.visible {\n  opacity: 1;\n  transform: none;\n}\n\n/* JS */\nconst obs = new IntersectionObserver(\n  entries => entries.forEach(e => {\n    e.target.classList.toggle(\n      "visible", e.isIntersecting\n    );\n  }), { threshold: .3 }\n);\ndocument.querySelectorAll(".reveal")\n  .forEach(el => obs.observe(el));`,
+  'Progress Indicator':`.progress-bar {\n  position: fixed;\n  top: 0; left: 0;\n  height: 3px;\n  background: var(--accent);\n  transform-origin: left;\n  transform: scaleX(0);\n  transition: transform 100ms linear;\n}\n\n/* JS */\nwindow.addEventListener("scroll", () => {\n  const pct = scrollY /\n    (document.body.scrollHeight - innerHeight);\n  bar.style.transform =\n    \`scaleX(\${pct})\`;\n}, { passive: true });`,
+  'Sticky Shrink':`.header {\n  padding: 24px;\n  transition: padding 250ms ease,\n    font-size 250ms ease;\n}\n.header.shrunk {\n  padding: 12px;\n  font-size: .9em;\n  backdrop-filter: blur(12px);\n  background: rgba(11,11,15,.8);\n}`,
+  'Line Reveal':`.line {\n  width: 0;\n  height: 2px;\n  background: var(--accent);\n  transition: width 600ms\n    cubic-bezier(.4, 0, .2, 1);\n}\n.visible .line {\n  width: 100%;\n}`,
+  'Image Reveal':`.img-reveal {\n  clip-path: inset(0 100% 0 0);\n  transition: clip-path 800ms\n    cubic-bezier(.77, 0, .175, 1);\n}\n.img-reveal.visible {\n  clip-path: inset(0 0 0 0);\n}`,
+
+  // ── 9. Icons ──
+  'Icon Swap':`:root {\n  --icon-swap-dur: 250ms;\n  --icon-swap-blur: 2px;\n  --icon-swap-scale: 0.25;\n}\n.icon-swap {\n  display: inline-grid;\n}\n.icon-swap > * {\n  grid-area: 1/1;\n  transition:\n    opacity var(--icon-swap-dur) ease,\n    filter  var(--icon-swap-dur) ease,\n    transform var(--icon-swap-dur) ease;\n}\n.icon-swap[data-state="a"] [data-icon="a"],\n.icon-swap[data-state="b"] [data-icon="b"] {\n  opacity: 1; filter: blur(0);\n  transform: scale(1);\n}\n.icon-swap[data-state="a"] [data-icon="b"],\n.icon-swap[data-state="b"] [data-icon="a"] {\n  opacity: 0;\n  filter: blur(var(--icon-swap-blur));\n  transform: scale(var(--icon-swap-scale));\n}`,
+  'SVG Draw':`.svg-draw path {\n  stroke-dasharray: var(--len);\n  stroke-dashoffset: var(--len);\n  animation: draw 1.5s ease forwards;\n}\n@keyframes draw {\n  to { stroke-dashoffset: 0 }\n}\n\n/* JS: set --len per path */\npath.style.setProperty(\n  "--len", path.getTotalLength()\n);`,
+  'Badge Bounce':`.badge {\n  animation: badgeBounce 400ms\n    cubic-bezier(.34, 1.56, .64, 1);\n}\n@keyframes badgeBounce {\n  0%   { transform: scale(0) }\n  60%  { transform: scale(1.2) }\n  100% { transform: scale(1) }\n}`,
+  'Logo Entrance':`.logo {\n  opacity: 0;\n  transform: translateY(12px) scale(.9);\n  animation: logoIn 600ms\n    cubic-bezier(.2, 0, .13, 1.5) forwards;\n}\n@keyframes logoIn {\n  to {\n    opacity: 1;\n    transform: none;\n  }\n}`,
+  'Arrow Flip':`.arrow {\n  transition: transform 250ms\n    cubic-bezier(.4, 0, .2, 1);\n}\n.open .arrow {\n  transform: rotate(180deg);\n}`,
+
+  // ── 10. Carousel / List ──
+  'Carousel Slide':`.carousel {\n  overflow: hidden;\n}\n.track {\n  display: flex;\n  transition: transform 500ms\n    cubic-bezier(.32, .72, 0, 1);\n}\n.track.slide-1 { transform: translateX(0) }\n.track.slide-2 { transform: translateX(-100%) }\n.track.slide-3 { transform: translateX(-200%) }`,
+  'Card Stack':`.stack {\n  position: relative;\n}\n.stack .card {\n  position: absolute;\n  transition: all 400ms\n    cubic-bezier(.2, 0, .13, 1.5);\n}\n.stack .card:nth-child(1) {\n  transform: translateY(0) scale(1);\n  z-index: 3;\n}\n.stack .card:nth-child(2) {\n  transform: translateY(8px) scale(.95);\n  z-index: 2; opacity: .7;\n}\n.stack .card:nth-child(3) {\n  transform: translateY(16px) scale(.9);\n  z-index: 1; opacity: .4;\n}`,
+  'List Add/Remove':`.list-item {\n  animation: listIn 300ms ease forwards;\n}\n@keyframes listIn {\n  from {\n    opacity: 0;\n    transform: translateX(-12px);\n    max-height: 0;\n  }\n  to {\n    opacity: 1;\n    transform: none;\n    max-height: 60px;\n  }\n}\n.list-item.removing {\n  animation: listOut 250ms ease forwards;\n}\n@keyframes listOut {\n  to {\n    opacity: 0;\n    transform: translateX(12px);\n    max-height: 0;\n  }\n}`,
+  'Drag Reorder':`.drag-item {\n  transition: transform 200ms ease;\n}\n.drag-item.dragging {\n  opacity: .6;\n  transform: scale(1.03);\n  box-shadow: 0 8px 24px rgba(0,0,0,.15);\n  z-index: 10;\n}`,
+  'Accordion':`.acc-body {\n  display: grid;\n  grid-template-rows: 0fr;\n  transition: grid-template-rows 300ms ease;\n}\n.acc-body > div {\n  overflow: hidden;\n}\n.acc-item.open .acc-body {\n  grid-template-rows: 1fr;\n}\n.acc-arrow {\n  transition: transform 250ms ease;\n}\n.acc-item.open .acc-arrow {\n  transform: rotate(180deg);\n}`,
+  'Infinite Scroll':`const obs = new IntersectionObserver(\n  ([entry]) => {\n    if (entry.isIntersecting) loadMore();\n  },\n  { root: container, threshold: 0 }\n);\nobs.observe(sentinel);\n\nfunction loadMore() {\n  items.forEach((item, i) => {\n    item.style.animationDelay = i * 80 + "ms";\n    item.classList.add("fade-in");\n    container.appendChild(item);\n  });\n}`,
+
+  // ── 11. State ──
+  'Theme Toggle':`.theme-toggle {\n  position: relative;\n  overflow: hidden;\n}\n.icon-dark, .icon-light {\n  transition: all 350ms ease;\n}\n[data-theme="light"] .icon-dark {\n  opacity: 0;\n  transform: rotate(90deg) scale(0);\n}\n[data-theme="dark"] .icon-light {\n  opacity: 0;\n  transform: rotate(-90deg) scale(0);\n}`,
+
+  'Error → Recovery':`.status-bar {\n  transition: all 350ms ease;\n  background: var(--error);\n}\n.status-bar.ok {\n  background: var(--success);\n}\n.status-bar .icon {\n  transition: transform 300ms\n    cubic-bezier(.34, 1.56, .64, 1);\n}\n.status-bar.ok .icon {\n  transform: rotate(360deg);\n}`,
+  'Expand Detail':`.detail {\n  display: grid;\n  grid-template-rows: 0fr;\n  transition: grid-template-rows\n    400ms cubic-bezier(.32, .72, 0, 1);\n}\n.detail > div {\n  overflow: hidden;\n}\n.open .detail {\n  grid-template-rows: 1fr;\n}\n.summary {\n  cursor: pointer;\n  transition: padding 300ms ease;\n}\n.open .summary {\n  padding-bottom: 12px;\n}`,
+  'Online Status':`.status-dot {\n  width: 12px; height: 12px;\n  border-radius: 50%;\n  background: #e4e4e7;\n  position: relative;\n}\n.status-dot::after {\n  content: "";\n  position: absolute;\n  inset: 0;\n  border-radius: 50%;\n  background: inherit;\n  animation: statusPulse 2s\n    ease-out infinite;\n}\n@keyframes statusPulse {\n  0%   { transform: scale(1); opacity: .6 }\n  100% { transform: scale(2.5); opacity: 0 }\n}\n.offline .status-dot {\n  background: #71717a;\n}\n.offline .status-dot::after {\n  animation: none;\n}`,
+  'Favorite Star':`.star {\n  cursor: pointer;\n  fill: none;\n  stroke: var(--text3);\n  transition: transform .3s\n    cubic-bezier(.34, 1.56, .64, 1);\n}\n.star.active {\n  fill: #d4d4d8;\n  stroke: #d4d4d8;\n  transform: scale(1.2);\n}\n@keyframes starPop {\n  0%   { transform: scale(1) }\n  30%  { transform: scale(.7) }\n  60%  { transform: scale(1.3) }\n  100% { transform: scale(1.2) }\n}\n.star.pop {\n  animation: starPop .4s ease;\n}`,
+  'Success / Fail':`.icon {\n  width: 36px; height: 36px;\n  border-radius: 50%;\n  border: 1px solid transparent;\n  transition: background .3s ease,\n    border-color .3s ease;\n}\n.icon.pending {\n  background: #202125;\n  border-color: #37383d;\n}\n.icon.success {\n  background: #44454b;\n  border-color: #6a6b72;\n}\n.icon.fail {\n  background: #2a2b30;\n  border-color: #5f6068;\n}\n.icon svg path {\n  stroke-dasharray: 28;\n  stroke-dashoffset: 28;\n}\n.icon.drawing svg path {\n  animation: sfDraw .38s ease forwards;\n}\n@keyframes sfDraw {\n  to { stroke-dashoffset: 0 }\n}`,
+  'Read / Unread':`.read-dot {\n  width: 8px; height: 8px;\n  border-radius: 50%;\n  background: var(--accent);\n  transition: all .3s\n    cubic-bezier(.34, 1.56, .64, 1);\n}\n.read .read-dot {\n  transform: scale(0);\n  opacity: 0;\n}\n.read .text {\n  color: var(--text3);\n}`,
+
+  // ── 12. Ambient ──
+  'Glow Pulse':`.glow {\n  width: 100px; height: 100px;\n  border-radius: 50%;\n  background: var(--accent);\n  filter: blur(40px);\n  animation: glowPulse 3s\n    ease-in-out infinite;\n}\n@keyframes glowPulse {\n  0%, 100% { opacity: .3; transform: scale(1) }\n  50%      { opacity: .6; transform: scale(1.2) }\n}`,
+  'Particles':`const ps = Array.from({length: 40}, () => ({\n  x: Math.random() * w,\n  y: Math.random() * h,\n  r: Math.random() * 2 + 1,\n  vy: -(Math.random() * .3 + .1),\n}));\nfunction draw() {\n  ctx.clearRect(0, 0, w, h);\n  ps.forEach(p => {\n    p.y += p.vy;\n    if (p.y < -5) p.y = h + 5;\n    ctx.beginPath();\n    ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);\n    ctx.fillStyle =\n      \`rgba(244,244,245,\${p.o})\`;\n    ctx.fill();\n  });\n  requestAnimationFrame(draw);\n}`,
+  'Magnetic Cursor':`el.addEventListener("mousemove", e => {\n  const rect = el.getBoundingClientRect();\n  const cx = rect.left + rect.width / 2;\n  const cy = rect.top + rect.height / 2;\n  const dx = (e.clientX - cx) * .12;\n  const dy = (e.clientY - cy) * .12;\n  el.style.transform =\n    \`translate(\${dx}px, \${dy}px)\`;\n});\nel.addEventListener("mouseleave", () => {\n  el.style.transform = "translate(0,0)";\n  el.style.transition = "transform .3s ease";\n});`,
+  'Glow Trace':`.glow-card {\n  --mx: 50%; --my: 50%;\n  position: relative;\n}\n.glow-card::before {\n  content: "";\n  position: absolute;\n  inset: -1px;\n  border-radius: inherit;\n  background: radial-gradient(\n    300px circle at var(--mx) var(--my),\n    rgba(244,244,245,.3),\n    transparent 60%\n  );\n  z-index: -1;\n}\n/* JS: update --mx, --my on mousemove */`,
+
+  // ── New effects ──
+  'Wave Bars':`.wave-bars {\n  display: flex;\n  align-items: flex-end;\n  gap: 3px;\n}\n.wave-bars span {\n  width: 4px;\n  background: var(--accent);\n  border-radius: 2px;\n  animation: waveBar 1.2s\n    ease-in-out infinite;\n}\n.wave-bars span:nth-child(2) {\n  animation-delay: .1s;\n}\n@keyframes waveBar {\n  0%, 100% { transform: scaleY(.4) }\n  50% { transform: scaleY(1) }\n}`,
+  'Typing Indicator':`.typing span {\n  width: 6px; height: 6px;\n  border-radius: 50%;\n  background: var(--text3);\n  animation: typingDot 1.4s\n    ease-in-out infinite;\n}\n.typing span:nth-child(2) {\n  animation-delay: .2s;\n}\n.typing span:nth-child(3) {\n  animation-delay: .4s;\n}\n@keyframes typingDot {\n  0%, 60%, 100% {\n    transform: translateY(0);\n    opacity: .4;\n  }\n  30% {\n    transform: translateY(-6px);\n    opacity: 1;\n  }\n}`,
+  'Hourglass Rotate':`.hourglass {\n  animation: hourglassFlip 2s\n    ease-in-out infinite;\n}\n@keyframes hourglassFlip {\n  0%    { transform: rotate(0deg) }\n  50%   { transform: rotate(180deg) }\n  100%  { transform: rotate(360deg) }\n}`,
+  'Rose Two':`/* r = a · cos(2θ) */\nconst k = 2, a = 9.2, scale = 3.25;\nfunction point(t, breath) {\n  const r = a * breath * Math.cos(k * t);\n  return {\n    x: 50 + Math.cos(t) * r * scale,\n    y: 50 + Math.sin(t) * r * scale\n  };\n}\n/* Animate particles along the curve\n   with trail opacity falloff */`,
+  'Rose Three':`/* r = a · cos(3θ) */\nconst k = 3, a = 9.2, scale = 3.25;\nfunction point(t, breath) {\n  const r = a * breath * Math.cos(k * t);\n  return {\n    x: 50 + Math.cos(t) * r * scale,\n    y: 50 + Math.sin(t) * r * scale\n  };\n}`,
+  'Lemniscate':`/* Bernoulli Lemniscate */\nfunction point(t, a) {\n  const d = 1 + Math.sin(t) ** 2;\n  return {\n    x: 50 + a * Math.cos(t) / d,\n    y: 50 + a * Math.sin(t)\n             * Math.cos(t) / d\n  };\n}\n/* a pulses between 20 and 27 */`,
+  'Tooltip':`.tooltip {\n  position: relative;\n}\n.tooltip .bubble {\n  opacity: 0;\n  transform: translateY(4px);\n  transition:\n    opacity .2s ease,\n    transform .2s ease;\n  /* show delay, no hide delay */\n}\n.tooltip:hover .bubble {\n  opacity: 1;\n  transform: translateY(0);\n  transition-delay: .4s;\n}\n.tooltip:not(:hover) .bubble {\n  transition-delay: 0s;\n}`,
+  'Drawer':`.drawer {\n  position: fixed;\n  right: 0; top: 0;\n  height: 100%;\n  width: 320px;\n  transform: translateX(100%);\n  transition: transform 300ms\n    cubic-bezier(.32, .72, 0, 1);\n}\n.drawer.open {\n  transform: translateX(0);\n}`,
+  'Dock Nav':`.dock {\n  display: flex;\n  align-items: end;\n  gap: 10px;\n}\n.dock-item {\n  transform-origin: bottom center;\n  transition: all .2s\n    cubic-bezier(.34, 1.56, .64, 1);\n}\n.dock-item:hover {\n  transform: scale(1.38) translateY(-7px);\n}\n/* neighbor magnification */\n.dock-item:hover + .dock-item,\n.dock-item:has(+ .dock-item:hover) {\n  transform: scale(1.16) translateY(-3px);\n}`,
+  'Shimmer Text':`.shimmer {\n  background: linear-gradient(100deg,\n    #b7b7bf 0%, #f4f4f5 34%,\n    #fff 48%, #7f8088 58%,\n    #f4f4f5 74%, #b7b7bf 100%);\n  background-size: 260% 100%;\n  -webkit-background-clip: text;\n  -webkit-text-fill-color: transparent;\n  text-shadow: 0 0 14px rgba(255,255,255,.08);\n  animation: shimmer 1.8s ease-in-out infinite;\n}\n@keyframes shimmer {\n  0%   { background-position: 120% 0 }\n  100% { background-position: -120% 0 }\n}`,
+  'Number Pop-in':`.num span {\n  display: inline-block;\n  animation: numPop .5s\n    cubic-bezier(.34, 1.56, .64, 1) both;\n}\n.num span:nth-child(2) { animation-delay: .08s }\n.num span:nth-child(3) { animation-delay: .16s }\n@keyframes numPop {\n  from {\n    opacity: 0;\n    filter: blur(6px);\n    transform: translateY(10px) scale(.5);\n  }\n  to {\n    opacity: 1;\n    filter: blur(0);\n    transform: none;\n  }\n}`,
+  'Avatar Stack':`.stack {\n  display: flex;\n}\n.stack .avatar {\n  margin-left: -8px;\n  transition: all .25s\n    cubic-bezier(.34, 1.56, .64, 1);\n}\n.stack:hover .avatar {\n  margin-left: 4px;\n}\n.stack .avatar:hover {\n  transform: translateY(-6px) scale(1.15);\n  z-index: 2;\n}`,
+  '3D Card Hover':`card.addEventListener("mousemove", e => {\n  const r = card.getBoundingClientRect();\n  const x = (e.clientX - r.left) / r.width - .5;\n  const y = (e.clientY - r.top) / r.height - .5;\n  card.style.transform =\n    \`rotateY(\${x*20}deg) rotateX(\${-y*20}deg)\`;\n});\ncard.addEventListener("mouseleave", () => {\n  card.style.transform = "none";\n});\n\n/* parent needs: perspective: 400px */`,
+  'Scan Line':`.scan {\n  position: relative;\n  overflow: hidden;\n}\n.scan::after {\n  content: "";\n  position: absolute;\n  left: 0; right: 0;\n  height: 2px;\n  background: var(--accent);\n  box-shadow:\n    0 0 12px 4px rgba(244,244,245,.5),\n    0 0 30px 8px rgba(244,244,245,.2);\n  animation: scanLine 3s\n    ease-in-out infinite;\n}\n@keyframes scanLine {\n  0%, 100% { top: -2px; opacity: 0 }\n  10%      { opacity: 1 }\n  50%      { top: 100%; opacity: 1 }\n  60%,100% { opacity: 0 }\n}`,
+
+  // ── New batch ──
+  'Confetti Button':`function confetti(btn) {\n  const colors = ['#f4f4f5','#fafafa','#d4d4d8'];\n  for (let i = 0; i < 12; i++) {\n    const p = document.createElement('span');\n    const angle = Math.random() * Math.PI * 2;\n    const dist = 40 + Math.random() * 40;\n    p.style.cssText = \`\n      --cx: \${Math.cos(angle)*dist}px;\n      --cy: \${Math.sin(angle)*dist}px;\n      background: \${colors[i%3]};\n    \`;\n    p.className = 'particle';\n    btn.appendChild(p);\n  }\n}\n@keyframes fly {\n  0%   { transform: translate(0,0) scale(1); opacity:1 }\n  100% { transform: translate(var(--cx),var(--cy)) scale(0); opacity:0 }\n}`,
+  'Command Palette':`.cmd-palette {\n  opacity: 0;\n  transform: scale(.95) translateY(-8px);\n  transition: all .2s\n    cubic-bezier(.32, .72, 0, 1);\n  pointer-events: none;\n}\n.cmd-palette.show {\n  opacity: 1;\n  transform: scale(1) translateY(0);\n  pointer-events: auto;\n}\n\n/* JS: Cmd+K to toggle */\ndocument.addEventListener("keydown", e => {\n  if ((e.metaKey || e.ctrlKey) && e.key === "k") {\n    e.preventDefault();\n    palette.classList.toggle("show");\n  }\n});`,
+  'OTP Input':`.otp-box {\n  width: 40px; height: 48px;\n  text-align: center;\n  border: 2px solid var(--border);\n  border-radius: 8px;\n  font-size: 18px;\n  transition: border-color .15s,\n    box-shadow .15s;\n}\n.otp-box:focus {\n  border-color: var(--accent);\n  box-shadow: 0 0 0 3px\n    rgba(244,244,245,.25);\n}\n\n/* JS: auto-advance */\ninput.addEventListener("input", () => {\n  if (input.value.length === 1)\n    input.nextElementSibling?.focus();\n});`,
+  'Range Slider':`.range-track {\n  height: 4px;\n  background: var(--border);\n  border-radius: 2px;\n  position: relative;\n}\n.range-fill {\n  height: 100%;\n  background: var(--accent);\n  border-radius: 2px;\n}\n.range-thumb {\n  width: 16px; height: 16px;\n  background: var(--accent);\n  border: 2px solid #fff;\n  border-radius: 50%;\n  cursor: grab;\n}\n.range-thumb:hover {\n  box-shadow: 0 0 0 6px\n    rgba(244,244,245,.25);\n}`,
+  'Step Indicator':`.step-dot {\n  width: 28px; height: 28px;\n  border-radius: 50%;\n  border: 2px solid var(--border);\n  transition: all .3s ease;\n}\n.step-dot.done {\n  background: var(--accent);\n  border-color: var(--accent);\n}\n.step-dot.active {\n  border-color: var(--accent);\n  animation: pulse 1.5s infinite;\n}\n.step-line {\n  width: 32px; height: 2px;\n  background: var(--border);\n  transition: background .3s;\n}\n.step-line.done {\n  background: var(--accent);\n}\n@keyframes pulse {\n  50% { box-shadow: 0 0 0 4px\n    rgba(244,244,245,.25) }\n}`,
+  'Gradient Text':`.gradient-text {\n  background: linear-gradient(90deg,\n    #7d7e86 0%, #f4f4f5 18%,\n    #fff 32%, #9a9ba3 46%,\n    #f7f7f8 62%, #6d6e76 78%,\n    #f4f4f5 100%);\n  background-size: 220% 100%;\n  -webkit-background-clip: text;\n  -webkit-text-fill-color: transparent;\n  text-shadow: 0 0 12px rgba(255,255,255,.08);\n  animation: gradText 2.2s ease-in-out infinite;\n}\n@keyframes gradText {\n  0%   { background-position: 0% 50% }\n  100% { background-position: 220% 50% }\n}`,
+  'Morphing Icon':`/* CSS transition on SVG path d attribute */\n.morph-icon path {\n  transition: d .4s\n    cubic-bezier(.34, 1.56, .64, 1);\n}\n\n/* JS: toggle between paths */\nconst play = "M8 5v14l11-7z";\nconst pause = "M6 4h4v16H6zm8 0h4v16h-4z";\nicon.addEventListener("click", () => {\n  const d = path.getAttribute("d");\n  path.setAttribute("d",\n    d === play ? pause : play);\n});`,
+  'Heart Like':`.heart {\n  cursor: pointer;\n  transition: transform .3s\n    cubic-bezier(.34, 1.56, .64, 1);\n  fill: var(--muted);\n}\n.heart.liked {\n  fill: #d4d4d8;\n  transform: scale(1.25);\n}\n@keyframes heartPop {\n  0%   { transform: scale(1) }\n  15%  { transform: scale(.7) }\n  40%  { transform: scale(1.3) }\n  100% { transform: scale(1.1) }\n}\n.heart.pop {\n  animation: heartPop .45s ease;\n  fill: #d4d4d8;\n}`,
+  'Copy Check':`.copy-check {\n  position: relative;\n  cursor: pointer;\n}\n.copy-check .icon-copy,\n.copy-check .icon-check {\n  position: absolute;\n  transition: all .2s ease;\n}\n.copy-check .icon-check {\n  opacity: 0;\n  transform: scale(.5);\n  stroke: var(--accent);\n}\n.copy-check.copied .icon-copy {\n  opacity: 0;\n  transform: scale(.5);\n}\n.copy-check.copied .icon-check {\n  opacity: 1;\n  transform: scale(1);\n}`,
+  'Bell Shake':`.bell {\n  cursor: pointer;\n  transform-origin: top center;\n}\n@keyframes bellRing {\n  0%,100% { transform: rotate(0) }\n  10%  { transform: rotate(14deg) }\n  20%  { transform: rotate(-14deg) }\n  30%  { transform: rotate(10deg) }\n  40%  { transform: rotate(-10deg) }\n  50%  { transform: rotate(6deg) }\n  60%  { transform: rotate(-4deg) }\n  70%  { transform: rotate(2deg) }\n  80%  { transform: rotate(0) }\n}\n.bell.ringing {\n  animation: bellRing .8s ease;\n}`,
+  'Swipe Action':`.swipe-content {\n  position: relative;\n  z-index: 1;\n  transition: transform .3s\n    cubic-bezier(.32, .72, 0, 1);\n}\n.swipe-actions {\n  position: absolute;\n  right: 0; top: 0; bottom: 0;\n}\n.swiped .swipe-content {\n  transform: translateX(-80px);\n}`,
+  'Bar Chart Rise':`.bar-col {\n  border-radius: 3px 3px 0 0;\n  animation: barRise 1s ease\n    forwards;\n}\n@keyframes barRise {\n  from { height: 0 }\n  to   { height: var(--h) }\n}\n\n/* stagger with delay */\n.bar-col:nth-child(2) {\n  animation-delay: .1s;\n}\n.bar-col:nth-child(3) {\n  animation-delay: .2s;\n}`,
+  'Donut Chart':`<svg viewBox="0 0 48 48">\n  <circle cx="24" cy="24" r="22"\n    fill="none" stroke="#2a2a32"\n    stroke-width="6"/>\n  <circle cx="24" cy="24" r="22"\n    fill="none" stroke="var(--accent)"\n    stroke-width="6"\n    stroke-linecap="round"\n    stroke-dasharray="138.2"\n    stroke-dashoffset="138.2"\n    transform="rotate(-90 24 24)">\n    <animate attributeName="stroke-dashoffset"\n      to="48" dur="1.5s" fill="freeze"/>\n  </circle>\n</svg>`,
+  'Gauge Meter':`.gauge-needle {\n  transform-origin: bottom center;\n  animation: needle 2.5s\n    ease-in-out infinite alternate;\n}\n@keyframes needle {\n  from { transform: rotate(-60deg) }\n  to   { transform: rotate(60deg) }\n}\n\n/* JS: set rotation based on value */\nconst deg = -60 + (value / max) * 120;\nneedle.style.transform =\n  \`rotate(\${deg}deg)\`;`,
+  'Sparkline Draw':`<clipPath id="sparkClip">\n  <rect x="0" y="0" width="0" height="58">\n    <animate attributeName="width"\n      values="0;120;120"\n      keyTimes="0;.7;1"\n      dur="2.2s"\n      repeatCount="indefinite"/>\n  </rect>\n</clipPath>\n<g clip-path="url(#sparkClip)">\n  <path class="sparkline-area" d="..."/>\n  <path class="sparkline-path" d="..."/>\n</g>`,
+  'Counter Card':`function animateCounter(el, target) {\n  const dur = 2000;\n  const start = performance.now();\n  (function tick(now) {\n    const t = Math.min(\n      (now - start) / dur, 1\n    );\n    const ease = 1 - Math.pow(1 - t, 3);\n    el.textContent = Math.floor(\n      ease * target\n    ).toLocaleString();\n    if (t < 1) requestAnimationFrame(tick);\n  })(start);\n}`,
+  'Horizontal Bar Reveal':`.hbar {\n  transform-origin: left;\n  transform: scaleX(.05);\n  animation: hbarReveal 2.4s ease-in-out infinite;\n}\n.hbar:nth-child(2) { animation-delay: 80ms }\n.hbar:nth-child(3) { animation-delay: 160ms }\n@keyframes hbarReveal {\n  0%, 8%   { transform: scaleX(.05) }\n  55%, 86% { transform: scaleX(1) }\n  100%     { transform: scaleX(.05) }\n}`,
+  'Scrubber Line':`<path class="scrub-base" pathLength="100" d="M4 66 L23 55 ..."/>\n<path class="scrub-active" pathLength="100" d="M4 66 L23 55 ..."/>\n<g>\n  <line class="scrub-guide" x1="0" y1="0" x2="0" y2="64"/>\n  <circle class="scrub-dot" cx="0" cy="0" r="5.5"/>\n  <text class="scrub-value" x="-6" y="-10">70</text>\n  <animateMotion dur="2.8s" repeatCount="indefinite"\n    path="M4 66 L23 55 ..."\n    keyPoints="0;1;1" keyTimes="0;.68;1"/>\n</g>\n\n.scrub-active {\n  stroke-dasharray: 100;\n  stroke-dashoffset: 100;\n  animation: scrubDraw 2.8s linear infinite;\n}\n@keyframes scrubDraw {\n  0% { stroke-dashoffset: 100 }\n  68%, 100% { stroke-dashoffset: 0 }\n}`,
+  'Radial Bars':`<circle class="ring" pathLength="100"\n  style="--off:26" cx="40" cy="40" r="31"/>\n\n.ring {\n  fill: none;\n  stroke-linecap: round;\n  stroke-dasharray: 100;\n  stroke-dashoffset: 100;\n  animation: radialDraw 2.4s ease-in-out infinite;\n}\n@keyframes radialDraw {\n  0%, 8%   { stroke-dashoffset: 100 }\n  58%, 86% { stroke-dashoffset: var(--off) }\n  100%     { stroke-dashoffset: 100 }\n}`,
+  'Scatter Pop':`<svg viewBox="0 0 160 88">\n  <line class="axis" x1="14" y1="8" x2="14" y2="74"/>\n  <line class="axis" x1="14" y1="74" x2="146" y2="74"/>\n  <circle class="point" style="--d:0s" cx="24" cy="68" r="2.1"/>\n  <circle class="point" style="--d:.04s" cx="34" cy="60" r="2.2"/>\n  <!-- more points follow the distribution -->\n</svg>\n\n.point {\n  opacity: 0;\n  transform-box: fill-box;\n  transform-origin: center;\n  transform: scale(.2);\n  animation: scatterPop 2.4s ease-in-out infinite;\n  animation-delay: var(--d);\n}\n@keyframes scatterPop {\n  0%, 10% { opacity: 0; transform: scale(.2) }\n  38%, 82% { opacity: .92; transform: scale(1) }\n  100% { opacity: 0; transform: scale(.2) }\n}`,
+  'Density Curve':`<clipPath id="densityClip">\n  <rect x="0" y="0" width="0" height="76">\n    <animate attributeName="width"\n      values="0;160;160"\n      keyTimes="0;.68;1"\n      dur="2.5s"\n      repeatCount="indefinite"/>\n  </rect>\n</clipPath>\n<g clip-path="url(#densityClip)">\n  <path class="density-fill" d="..."/>\n  <path class="density-fill" d="..."/>\n  <path class="density-path" d="..."/>\n  <path class="density-path" d="..."/>\n</g>`,
+  'Pie Slice Reveal':`.pie {\n  border-radius: 50%;\n  background: conic-gradient(\n    #f4f4f5 0 var(--a1),\n    #b7b7bf var(--a1) var(--a2),\n    #71717a var(--a2) var(--a3),\n    #3f4047 var(--a3) var(--a4),\n    transparent var(--a4) 360deg\n  );\n  animation: pieReveal 2.6s ease-in-out infinite;\n}\n@property --a1 { syntax: "<angle>"; inherits: false; initial-value: 0deg }\n@property --a2 { syntax: "<angle>"; inherits: false; initial-value: 0deg }\n@property --a3 { syntax: "<angle>"; inherits: false; initial-value: 0deg }\n@property --a4 { syntax: "<angle>"; inherits: false; initial-value: 0deg }\n@keyframes pieReveal {\n  0% { --a1:0deg; --a2:0deg; --a3:0deg; --a4:0deg }\n  30% { --a1:122deg; --a2:122deg; --a3:122deg; --a4:122deg }\n  48% { --a1:122deg; --a2:223deg; --a3:223deg; --a4:223deg }\n  64% { --a1:122deg; --a2:223deg; --a3:295deg; --a4:295deg }\n  80%,100% { --a1:122deg; --a2:223deg; --a3:295deg; --a4:360deg }\n}`,
+  'Radar Sweep':`.radar-grid {\n  opacity: 0;\n  animation: fadeIn 300ms ease forwards;\n}\n.radar-shape {\n  transform-origin: center;\n  transform-box: fill-box;\n  transform: scale(.1);\n  opacity: .2;\n  animation: radarIn 700ms ease forwards 120ms;\n}\n@keyframes radarIn {\n  to { transform: scale(1); opacity: 1 }\n}`,
+};
+document.querySelectorAll('.card').forEach(card=>{
+  const title=card.querySelector('h3');
+  if(!title)return;
+  const name=title.textContent;
+  const code=codeSnippets[name];
+  if(!code)return;
+  // add code button
+  const btn=document.createElement('div');
+  btn.className='code-btn';
+  btn.innerHTML='<svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>';
+  btn.addEventListener('click',e=>{e.stopPropagation();card.classList.toggle('show-code')});
+  card.querySelector('.preview').appendChild(btn);
+  // add code panel
+  const panel=document.createElement('div');
+  panel.className='code-panel';
+  panel.innerHTML=`<div class="code-panel-head"><span>Code</span><div style="display:flex;gap:8px;align-items:center"><div class="code-copy" data-code="${encodeURIComponent(code)}"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></div><div class="code-close" onclick="this.closest('.card').classList.remove('show-code')"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></div></div></div><pre>${code.replace(/</g,'&lt;')}</pre>`;
+  card.appendChild(panel);
+});
+document.addEventListener('click',e=>{
+  const btn=e.target.closest('.code-copy');
+  if(!btn)return;
+  const code=decodeURIComponent(btn.dataset.code);
+  function onCopied(){
+    btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
+    btn.querySelector('svg').style.cssText='width:14px;height:14px;stroke:var(--accent);stroke-width:2;pointer-events:none';
+    setTimeout(()=>{btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';btn.querySelector('svg').style.cssText='width:14px;height:14px;stroke:var(--text3);stroke-width:2;pointer-events:none'},1500);
+  }
+  function fallbackCopy(text){
+    const ta=document.createElement('textarea');
+    ta.value=text;ta.style.cssText='position:fixed;left:-9999px';
+    document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy');onCopied()}catch(e){}
+    document.body.removeChild(ta);
+  }
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(code).then(onCopied).catch(()=>fallbackCopy(code));
+  }else{fallbackCopy(code)}
+});
+
+</script>
+</body>
+</html>

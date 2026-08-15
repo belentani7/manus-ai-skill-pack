@@ -1,0 +1,19 @@
+{
+  "name": "particles-lifecycle",
+  "description": "Particle lifecycle management—emission/spawning, death conditions, object pooling, trails, fade-in/out, and state transitions. Use when particles need birth/death cycles, continuous emission, trail effects, or memory-efficient recycling.",
+  "tags": [
+    "3d",
+    "three.js",
+    "code-generation"
+  ],
+  "sub_skills": [],
+  "source": "claude-user",
+  "type": "template",
+  "depends_on": [
+    "particles-gpu"
+  ],
+  "enhances": [],
+  "last_reviewed_at": "2026-06-25",
+  "review_score": 60,
+  "relevance_tier": "A"
+}

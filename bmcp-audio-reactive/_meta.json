@@ -1,0 +1,26 @@
+{
+  "name": "audio-reactive",
+  "description": "Binding audio analysis data to visual parameters including smoothing, beat detection responses, and frequency-to-visual mappings. Use when creating audio visualizers, music-reactive animations, or any visual effect driven by audio input.",
+  "tags": [
+    "audio",
+    "3d",
+    "javascript",
+    "code-generation"
+  ],
+  "sub_skills": [],
+  "source": "claude-user",
+  "type": "template",
+  "depends_on": [
+    "audio-analysis",
+    "audio-playback"
+  ],
+  "enhances": [
+    "particles-gpu",
+    "postfx-bloom",
+    "gsap-sequencing",
+    "shader-effects"
+  ],
+  "last_reviewed_at": "2026-08-07",
+  "review_score": 60,
+  "relevance_tier": "B"
+}

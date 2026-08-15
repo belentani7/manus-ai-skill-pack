@@ -1,0 +1,38 @@
+{
+  "name": "auteur",
+  "owner": {
+    "name": "agiwhitelist",
+    "url": "https://github.com/agiwhitelist"
+  },
+  "metadata": {
+    "description": "The auteur skill: websites directed like films, gated by an executable anti-slop linter."
+  },
+  "plugins": [
+    {
+      "name": "auteur",
+      "source": "./",
+      "skills": ["./"],
+      "strict": false,
+      "description": "Design and build complete, distinctive web experiences — award-level product pages, cinematic scroll-directed sites, and multi-screen products as one design system. Art direction is committed before any markup, assets come from local CLIs, and nothing ships until it passes the anti-slop and motion gates.",
+      "version": "1.3.1",
+      "author": {
+        "name": "agiwhitelist",
+        "url": "https://github.com/agiwhitelist"
+      },
+      "homepage": "https://agiwhitelist.github.io/auteur/",
+      "repository": "https://github.com/agiwhitelist/auteur",
+      "license": "MIT",
+      "category": "design",
+      "keywords": [
+        "web-design",
+        "webgl",
+        "gsap",
+        "scroll-animation",
+        "landing-page",
+        "design-system",
+        "anti-slop",
+        "creative-coding"
+      ]
+    }
+  ]
+}

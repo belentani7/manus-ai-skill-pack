@@ -1,0 +1,25 @@
+{
+  "name": "auteur",
+  "version": "1.3.1",
+  "description": "The Claude Code skill that directs a website like a film.",
+  "type": "module",
+  "license": "MIT",
+  "homepage": "https://agiwhitelist.github.io/auteur/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agiwhitelist/auteur"
+  },
+  "scripts": {
+    "slopscan": "node scripts/slopscan.mjs",
+    "motionqa": "node scripts/motionqa.mjs",
+    "shoot": "node scripts/shoot.mjs",
+    "refscout": "node scripts/refscout.mjs",
+    "moodboard": "node scripts/moodboard.mjs",
+    "source": "node scripts/source.mjs",
+    "systemscan": "node scripts/systemscan.mjs",
+    "chromadiff": "node scripts/chromadiff.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.62.1"
+  }
+}
