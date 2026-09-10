@@ -20,5 +20,5 @@ if __name__ == "__main__":
     
     print(f"Top 5 GitHub templates for [1m{game_type}[0m:")
     for i, repo in enumerate(results[:5]):
-        print(f"{i+1}. [4m{repo["html_url"]}[0m")
-        print(f"   [32m★ {repo["stargazers_count"]}[0m | [34m{repo["language"]}[0m | {repo["description"]}")
+        print(f"{i+1}. [4m{repo['html_url']}[0m")
+        print(f"   [32m★ {repo['stargazers_count']}[0m | [34m{repo['language']}[0m | {repo['description']}")

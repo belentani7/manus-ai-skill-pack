@@ -62,11 +62,12 @@ def read_source_file(filepath):
 def generate_unit_tests(description, framework='vitest', source_code=None):
     """Generate unit tests."""
     
+    source_block = ("Source code:\n" + source_code) if source_code else ""
     user_prompt = f"""Generate {framework} unit tests for:
 
 {description}
 
-{"Source code:\n" + source_code if source_code else ""}
+{source_block}
 
 Requirements:
 - Use {framework} syntax

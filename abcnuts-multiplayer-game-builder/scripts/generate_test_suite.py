@@ -19,7 +19,8 @@ def generate_test_suite(game_name):
         file_path = os.path.join(test_dir, file_name)
         if not os.path.exists(file_path):
             with open(file_path, "w") as f:
-                f.write(f"// Test suite for {file_name.replace(".test.js", "")}\n")
+                _base = file_name.replace(".test.js", "")
+                f.write(f"// Test suite for {_base}\n")
             print(f"✅ Created {file_path}")
         else:
             print(f"⚠️ {file_path} already exists, skipping.")

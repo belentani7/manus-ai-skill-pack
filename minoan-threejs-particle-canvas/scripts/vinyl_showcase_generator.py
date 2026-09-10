@@ -140,6 +140,181 @@ def build_html(args):
         active = ' class="active"' if i == 0 else ""
         dots_html += f'\n      <div class="section-dot{" active" if i == 0 else ""}" data-section="section-{i}"></div>'
 
+    _VINYL_AUDIO_HEAD = '''
+let audioCtx = null, musicGain = null, masterGain = null, musicLPF = null;
+let scratchMidEQ = null, crackleGain = null, crackleSource = null;
+let needleGain = null, needleSource = null;
+let musicBuffer = null, activeSource = null, musicReady = false, audioInitialized = false;
+let virtualPlayhead = 0, lastSourceStartTime = 0, lastSourceOffset = 0, lastSourceRate = 1;
+let sourceIsPlaying = false, prevSpinY = 0, smoothedRate = 1;
+let smoothedLPFFreq = 22000, smoothedLPFQ = 0.707, smoothedMidGain = 0;
+let wowPhase = 0, flutterPhase = 0, currentDirection = 1, reversedBuffer = null;
+let framesSinceRestart = 0;
+
+function createNoiseBuffer(ctx, dur, type) {
+  const sr = ctx.sampleRate, len = Math.floor(sr * dur);
+  const buf = ctx.createBuffer(1, len, sr);
+  const data = buf.getChannelData(0);
+  if (type === "crackle") {
+    for (let i = 0; i < len; i++) {
+      const r = Math.random();
+      if (r > 0.997) {
+        const amp = 0.3 + Math.random() * 0.7;
+        const cl = Math.floor(sr * (0.0002 + Math.random() * 0.001));
+        for (let j = 0; j < cl && i + j < len; j++) data[i + j] = (Math.random() * 2 - 1) * amp * (1 - j / cl);
+        i += Math.floor(sr * 0.002);
+      } else if (r > 0.993) { data[i] = (Math.random() * 2 - 1) * 0.15; }
+      else { data[i] = (Math.random() * 2 - 1) * 0.008; }
+    }
+  } else {
+    let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+    for (let i = 0; i < len; i++) {
+      const w = Math.random() * 2 - 1;
+      b0=0.99886*b0+w*0.0555179; b1=0.99332*b1+w*0.0750759; b2=0.969*b2+w*0.153852;
+      b3=0.8665*b3+w*0.3104856; b4=0.55*b4+w*0.5329522; b5=-0.7616*b5-w*0.016898;
+      data[i] = (b0+b1+b2+b3+b4+b5+b6+w*0.5362)*0.06; b6=w*0.115926;
+    }
+  }
+  return buf;
+}
+
+function getReversedBuffer() {
+  if (reversedBuffer) return reversedBuffer;
+  if (!musicBuffer) return null;
+  const nCh = musicBuffer.numberOfChannels, len = musicBuffer.length;
+  reversedBuffer = audioCtx.createBuffer(nCh, len, musicBuffer.sampleRate);
+  for (let ch = 0; ch < nCh; ch++) {
+    const src = musicBuffer.getChannelData(ch), dst = reversedBuffer.getChannelData(ch);
+    for (let i = 0; i < len; i++) dst[i] = src[len - 1 - i];
+  }
+  return reversedBuffer;
+}
+
+function startMusicSource(offset, rate) {
+  if (!audioCtx || !musicBuffer) return;
+  if (activeSource) { try { activeSource.stop(); } catch(e) {} activeSource.disconnect(); activeSource = null; }
+  const dur = musicBuffer.duration;
+  const isRev = rate < 0, absRate = Math.max(Math.abs(rate), 0.001);
+  let useBuf, safeOff;
+  if (isRev) { useBuf = getReversedBuffer(); if (!useBuf) return; safeOff = ((dur - ((offset%dur+dur)%dur))%dur+dur)%dur; currentDirection = -1; }
+  else { useBuf = musicBuffer; safeOff = (offset%dur+dur)%dur; currentDirection = 1; }
+  const src = audioCtx.createBufferSource();
+  src.buffer = useBuf; src.loop = true; src.loopStart = 0; src.loopEnd = dur;
+  src.playbackRate.value = absRate; src.connect(scratchMidEQ); src.start(0, safeOff);
+  activeSource = src; sourceIsPlaying = true;
+  lastSourceStartTime = audioCtx.currentTime; lastSourceOffset = safeOff; lastSourceRate = absRate;
+}
+
+function getPlayhead() {
+  if (!activeSource || !sourceIsPlaying || !musicBuffer) return virtualPlayhead;
+  const elapsed = audioCtx.currentTime - lastSourceStartTime, dur = musicBuffer.duration;
+  const rawPos = ((lastSourceOffset + elapsed * lastSourceRate) % dur + dur) % dur;
+  return currentDirection === -1 ? ((dur - rawPos) % dur + dur) % dur : rawPos;
+}
+
+function initAudio() {
+  if (audioCtx) return;
+  try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) { return; }
+  masterGain = audioCtx.createGain(); masterGain.gain.value = 1; masterGain.connect(audioCtx.destination);
+  scratchMidEQ = audioCtx.createBiquadFilter(); scratchMidEQ.type = "peaking";
+  scratchMidEQ.frequency.value = 1800; scratchMidEQ.Q.value = 1.5; scratchMidEQ.gain.value = 0;
+  musicLPF = audioCtx.createBiquadFilter(); musicLPF.type = "lowpass";
+  musicLPF.frequency.value = 22000; musicLPF.Q.value = 0.707;
+  musicGain = audioCtx.createGain(); musicGain.gain.value = 0.5;
+  scratchMidEQ.connect(musicLPF); musicLPF.connect(musicGain); musicGain.connect(masterGain);
+
+  const crackleBuf = createNoiseBuffer(audioCtx, 4, "crackle");
+  crackleSource = audioCtx.createBufferSource(); crackleSource.buffer = crackleBuf; crackleSource.loop = true;
+  const crackleFilter = audioCtx.createBiquadFilter(); crackleFilter.type = "bandpass";
+  crackleFilter.frequency.value = 3000; crackleFilter.Q.value = 0.8;
+  crackleGain = audioCtx.createGain(); crackleGain.gain.value = 0.02;
+  crackleSource.connect(crackleFilter); crackleFilter.connect(crackleGain); crackleGain.connect(masterGain);
+  crackleSource.start(0);
+
+  const needleBuf = createNoiseBuffer(audioCtx, 3, "hiss");
+  needleSource = audioCtx.createBufferSource(); needleSource.buffer = needleBuf; needleSource.loop = true;
+  const needleFilter = audioCtx.createBiquadFilter(); needleFilter.type = "highpass";
+  needleFilter.frequency.value = 4000; needleFilter.Q.value = 0.5;
+  needleGain = audioCtx.createGain(); needleGain.gain.value = 0.025;
+  needleSource.connect(needleFilter); needleFilter.connect(needleGain); needleGain.connect(masterGain);
+  needleSource.start(0);
+'''
+    _VINYL_AUDIO_MUSIC = '''
+  if (AUDIO_URL) {
+    fetch(AUDIO_URL).then(r => r.arrayBuffer()).then(ab => audioCtx.decodeAudioData(ab)).then(decoded => {
+      musicBuffer = decoded; musicReady = true; virtualPlayhead = 0; startMusicSource(0, 1);
+    }).catch(e => console.warn("Music decode error:", e));
+  }
+'''
+    _VINYL_AUDIO_TAIL = '''
+}
+
+function ensureAudio() { if (!audioInitialized) { audioInitialized = true; initAudio(); } }
+function autoPlayOnInteraction() { ensureAudio(); if (audioCtx && audioCtx.state === "suspended") audioCtx.resume(); }
+addEventListener("pointerdown", autoPlayOnInteraction, { once: true });
+addEventListener("keydown", autoPlayOnInteraction, { once: true });
+addEventListener("scroll", autoPlayOnInteraction, { once: true, passive: true });
+
+function updatePlatterAudio() {
+  if (!audioCtx) return;
+  const dt = 1/60; framesSinceRestart++;
+  const fxActive = isDragging || isScratchActive;
+  const currentSpinRot = spinPivot.rotation.y;
+  let deltaRad = currentSpinRot - prevSpinY; prevSpinY = currentSpinRot;
+  if (deltaRad > Math.PI) deltaRad -= Math.PI * 2;
+  if (deltaRad < -Math.PI) deltaRad += Math.PI * 2;
+  const BASE_RAD = (33.333/60) * Math.PI * 2 / 60;
+
+  if (fxActive) {
+    const perFrame = settings.spinSpeed || BASE_RAD;
+    let targetRate = perFrame > 1e-5 ? deltaRad / perFrame : (Math.abs(deltaRad) > 3e-4 ? deltaRad / BASE_RAD : 0);
+    targetRate = Math.max(-4, Math.min(targetRate, 4));
+    const inertia = isDragging ? 0.22 : (Math.abs(targetRate) < Math.abs(smoothedRate) ? 0.035 : 0.07);
+    smoothedRate += (targetRate - smoothedRate) * inertia;
+
+    wowPhase += 0.4 * dt * Math.PI * 2; flutterPhase += 6.5 * dt * Math.PI * 2;
+    const wowMod = 1 + Math.sin(wowPhase)*0.0015*Math.min(Math.abs(smoothedRate),1) + Math.sin(flutterPhase)*0.0004*Math.min(Math.abs(smoothedRate),1);
+    const finalRate = smoothedRate * wowMod;
+
+    if (activeSource && sourceIsPlaying) {
+      const absNew = Math.max(Math.abs(finalRate), 0.001);
+      const newDir = finalRate < -0.005 ? -1 : finalRate > 0.005 ? 1 : currentDirection;
+      if (newDir !== currentDirection || (Math.abs(absNew - lastSourceRate) > 0.04 && framesSinceRestart > 3)) {
+        virtualPlayhead = getPlayhead(); startMusicSource(virtualPlayhead, newDir * absNew); framesSinceRestart = 0;
+      } else { activeSource.playbackRate.setTargetAtTime(absNew, audioCtx.currentTime, 0.03); lastSourceRate = absNew; }
+    }
+
+    const absRate = Math.abs(smoothedRate);
+    const lpfRatio = Math.min(absRate, 1);
+    smoothedLPFFreq += (180 * Math.pow(22000/180, lpfRatio) - smoothedLPFFreq) * 0.06;
+    smoothedLPFQ += ((isDragging ? 2.5 : 0.707) - smoothedLPFQ) * 0.08;
+    smoothedMidGain += ((isDragging && absRate > 0.05 ? 6 : 0) - smoothedMidGain) * 0.1;
+    if (musicLPF) { musicLPF.frequency.setTargetAtTime(smoothedLPFFreq, audioCtx.currentTime, 0.02); musicLPF.Q.setTargetAtTime(smoothedLPFQ, audioCtx.currentTime, 0.02); }
+    if (scratchMidEQ) scratchMidEQ.gain.setTargetAtTime(smoothedMidGain, audioCtx.currentTime, 0.02);
+    if (musicGain) { const tv = 0.04 + 0.46 * Math.min(absRate, 1); musicGain.gain.setTargetAtTime(tv, audioCtx.currentTime, 0.05); }
+    if (crackleGain) { let cv = absRate < 0.02 ? 0 : absRate < 0.5 ? 0.12*(1-absRate/0.5)+0.02*(absRate/0.5) : 0.02; if (isDragging) cv *= 2.5; crackleGain.gain.setTargetAtTime(Math.min(cv, 0.3), audioCtx.currentTime, 0.04); }
+    if (crackleSource) crackleSource.playbackRate.setTargetAtTime(Math.max(0.1, absRate*1.2), audioCtx.currentTime, 0.05);
+    if (needleGain) needleGain.gain.setTargetAtTime(absRate > 0.02 ? 0.025*Math.min(absRate,1) : 0, audioCtx.currentTime, 0.04);
+  } else {
+    smoothedRate += (1 - smoothedRate) * 0.1;
+    if (activeSource && sourceIsPlaying) {
+      if (currentDirection !== 1) { virtualPlayhead = getPlayhead(); startMusicSource(virtualPlayhead, 1); }
+      else if (Math.abs(lastSourceRate - 1) > 0.01) { activeSource.playbackRate.setTargetAtTime(1, audioCtx.currentTime, 0.08); lastSourceRate = 1; }
+    }
+    smoothedLPFFreq += (22000 - smoothedLPFFreq) * 0.1; smoothedLPFQ += (0.707 - smoothedLPFQ) * 0.1; smoothedMidGain += -smoothedMidGain * 0.1;
+    if (musicLPF) { musicLPF.frequency.setTargetAtTime(smoothedLPFFreq, audioCtx.currentTime, 0.05); musicLPF.Q.setTargetAtTime(smoothedLPFQ, audioCtx.currentTime, 0.05); }
+    if (scratchMidEQ) scratchMidEQ.gain.setTargetAtTime(smoothedMidGain, audioCtx.currentTime, 0.05);
+    if (musicGain) musicGain.gain.setTargetAtTime(0.5, audioCtx.currentTime, 0.08);
+    if (crackleGain) crackleGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
+    if (needleGain) needleGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
+  }
+}
+'''
+    audio_block = ("" if not include_audio
+                   else _VINYL_AUDIO_HEAD
+                   + (_VINYL_AUDIO_MUSIC
+                      if include_music else "")
+                   + _VINYL_AUDIO_TAIL)
     return textwrap.dedent(f'''\
 <!DOCTYPE html>
 <html lang="en">
@@ -984,175 +1159,7 @@ renderer.domElement.addEventListener("touchmove", e => {{ e.preventDefault(); }}
 renderer.domElement.addEventListener("touchend", e => {{ e.preventDefault(); }}, {{ passive: false }});
 
 // ─── AUDIO ENGINE (OPTIONAL) ─────────────────────────────
-{"" if not include_audio else '''
-let audioCtx = null, musicGain = null, masterGain = null, musicLPF = null;
-let scratchMidEQ = null, crackleGain = null, crackleSource = null;
-let needleGain = null, needleSource = null;
-let musicBuffer = null, activeSource = null, musicReady = false, audioInitialized = false;
-let virtualPlayhead = 0, lastSourceStartTime = 0, lastSourceOffset = 0, lastSourceRate = 1;
-let sourceIsPlaying = false, prevSpinY = 0, smoothedRate = 1;
-let smoothedLPFFreq = 22000, smoothedLPFQ = 0.707, smoothedMidGain = 0;
-let wowPhase = 0, flutterPhase = 0, currentDirection = 1, reversedBuffer = null;
-let framesSinceRestart = 0;
-
-function createNoiseBuffer(ctx, dur, type) {
-  const sr = ctx.sampleRate, len = Math.floor(sr * dur);
-  const buf = ctx.createBuffer(1, len, sr);
-  const data = buf.getChannelData(0);
-  if (type === "crackle") {
-    for (let i = 0; i < len; i++) {
-      const r = Math.random();
-      if (r > 0.997) {
-        const amp = 0.3 + Math.random() * 0.7;
-        const cl = Math.floor(sr * (0.0002 + Math.random() * 0.001));
-        for (let j = 0; j < cl && i + j < len; j++) data[i + j] = (Math.random() * 2 - 1) * amp * (1 - j / cl);
-        i += Math.floor(sr * 0.002);
-      } else if (r > 0.993) { data[i] = (Math.random() * 2 - 1) * 0.15; }
-      else { data[i] = (Math.random() * 2 - 1) * 0.008; }
-    }
-  } else {
-    let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
-    for (let i = 0; i < len; i++) {
-      const w = Math.random() * 2 - 1;
-      b0=0.99886*b0+w*0.0555179; b1=0.99332*b1+w*0.0750759; b2=0.969*b2+w*0.153852;
-      b3=0.8665*b3+w*0.3104856; b4=0.55*b4+w*0.5329522; b5=-0.7616*b5-w*0.016898;
-      data[i] = (b0+b1+b2+b3+b4+b5+b6+w*0.5362)*0.06; b6=w*0.115926;
-    }
-  }
-  return buf;
-}
-
-function getReversedBuffer() {
-  if (reversedBuffer) return reversedBuffer;
-  if (!musicBuffer) return null;
-  const nCh = musicBuffer.numberOfChannels, len = musicBuffer.length;
-  reversedBuffer = audioCtx.createBuffer(nCh, len, musicBuffer.sampleRate);
-  for (let ch = 0; ch < nCh; ch++) {
-    const src = musicBuffer.getChannelData(ch), dst = reversedBuffer.getChannelData(ch);
-    for (let i = 0; i < len; i++) dst[i] = src[len - 1 - i];
-  }
-  return reversedBuffer;
-}
-
-function startMusicSource(offset, rate) {
-  if (!audioCtx || !musicBuffer) return;
-  if (activeSource) { try { activeSource.stop(); } catch(e) {} activeSource.disconnect(); activeSource = null; }
-  const dur = musicBuffer.duration;
-  const isRev = rate < 0, absRate = Math.max(Math.abs(rate), 0.001);
-  let useBuf, safeOff;
-  if (isRev) { useBuf = getReversedBuffer(); if (!useBuf) return; safeOff = ((dur - ((offset%dur+dur)%dur))%dur+dur)%dur; currentDirection = -1; }
-  else { useBuf = musicBuffer; safeOff = (offset%dur+dur)%dur; currentDirection = 1; }
-  const src = audioCtx.createBufferSource();
-  src.buffer = useBuf; src.loop = true; src.loopStart = 0; src.loopEnd = dur;
-  src.playbackRate.value = absRate; src.connect(scratchMidEQ); src.start(0, safeOff);
-  activeSource = src; sourceIsPlaying = true;
-  lastSourceStartTime = audioCtx.currentTime; lastSourceOffset = safeOff; lastSourceRate = absRate;
-}
-
-function getPlayhead() {
-  if (!activeSource || !sourceIsPlaying || !musicBuffer) return virtualPlayhead;
-  const elapsed = audioCtx.currentTime - lastSourceStartTime, dur = musicBuffer.duration;
-  const rawPos = ((lastSourceOffset + elapsed * lastSourceRate) % dur + dur) % dur;
-  return currentDirection === -1 ? ((dur - rawPos) % dur + dur) % dur : rawPos;
-}
-
-function initAudio() {
-  if (audioCtx) return;
-  try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) { return; }
-  masterGain = audioCtx.createGain(); masterGain.gain.value = 1; masterGain.connect(audioCtx.destination);
-  scratchMidEQ = audioCtx.createBiquadFilter(); scratchMidEQ.type = "peaking";
-  scratchMidEQ.frequency.value = 1800; scratchMidEQ.Q.value = 1.5; scratchMidEQ.gain.value = 0;
-  musicLPF = audioCtx.createBiquadFilter(); musicLPF.type = "lowpass";
-  musicLPF.frequency.value = 22000; musicLPF.Q.value = 0.707;
-  musicGain = audioCtx.createGain(); musicGain.gain.value = 0.5;
-  scratchMidEQ.connect(musicLPF); musicLPF.connect(musicGain); musicGain.connect(masterGain);
-
-  const crackleBuf = createNoiseBuffer(audioCtx, 4, "crackle");
-  crackleSource = audioCtx.createBufferSource(); crackleSource.buffer = crackleBuf; crackleSource.loop = true;
-  const crackleFilter = audioCtx.createBiquadFilter(); crackleFilter.type = "bandpass";
-  crackleFilter.frequency.value = 3000; crackleFilter.Q.value = 0.8;
-  crackleGain = audioCtx.createGain(); crackleGain.gain.value = 0.02;
-  crackleSource.connect(crackleFilter); crackleFilter.connect(crackleGain); crackleGain.connect(masterGain);
-  crackleSource.start(0);
-
-  const needleBuf = createNoiseBuffer(audioCtx, 3, "hiss");
-  needleSource = audioCtx.createBufferSource(); needleSource.buffer = needleBuf; needleSource.loop = true;
-  const needleFilter = audioCtx.createBiquadFilter(); needleFilter.type = "highpass";
-  needleFilter.frequency.value = 4000; needleFilter.Q.value = 0.5;
-  needleGain = audioCtx.createGain(); needleGain.gain.value = 0.025;
-  needleSource.connect(needleFilter); needleFilter.connect(needleGain); needleGain.connect(masterGain);
-  needleSource.start(0);
-''' + ('''
-  if (AUDIO_URL) {
-    fetch(AUDIO_URL).then(r => r.arrayBuffer()).then(ab => audioCtx.decodeAudioData(ab)).then(decoded => {
-      musicBuffer = decoded; musicReady = true; virtualPlayhead = 0; startMusicSource(0, 1);
-    }).catch(e => console.warn("Music decode error:", e));
-  }
-''' if include_music else '') + '''
-}
-
-function ensureAudio() { if (!audioInitialized) { audioInitialized = true; initAudio(); } }
-function autoPlayOnInteraction() { ensureAudio(); if (audioCtx && audioCtx.state === "suspended") audioCtx.resume(); }
-addEventListener("pointerdown", autoPlayOnInteraction, { once: true });
-addEventListener("keydown", autoPlayOnInteraction, { once: true });
-addEventListener("scroll", autoPlayOnInteraction, { once: true, passive: true });
-
-function updatePlatterAudio() {
-  if (!audioCtx) return;
-  const dt = 1/60; framesSinceRestart++;
-  const fxActive = isDragging || isScratchActive;
-  const currentSpinRot = spinPivot.rotation.y;
-  let deltaRad = currentSpinRot - prevSpinY; prevSpinY = currentSpinRot;
-  if (deltaRad > Math.PI) deltaRad -= Math.PI * 2;
-  if (deltaRad < -Math.PI) deltaRad += Math.PI * 2;
-  const BASE_RAD = (33.333/60) * Math.PI * 2 / 60;
-
-  if (fxActive) {
-    const perFrame = settings.spinSpeed || BASE_RAD;
-    let targetRate = perFrame > 1e-5 ? deltaRad / perFrame : (Math.abs(deltaRad) > 3e-4 ? deltaRad / BASE_RAD : 0);
-    targetRate = Math.max(-4, Math.min(targetRate, 4));
-    const inertia = isDragging ? 0.22 : (Math.abs(targetRate) < Math.abs(smoothedRate) ? 0.035 : 0.07);
-    smoothedRate += (targetRate - smoothedRate) * inertia;
-
-    wowPhase += 0.4 * dt * Math.PI * 2; flutterPhase += 6.5 * dt * Math.PI * 2;
-    const wowMod = 1 + Math.sin(wowPhase)*0.0015*Math.min(Math.abs(smoothedRate),1) + Math.sin(flutterPhase)*0.0004*Math.min(Math.abs(smoothedRate),1);
-    const finalRate = smoothedRate * wowMod;
-
-    if (activeSource && sourceIsPlaying) {
-      const absNew = Math.max(Math.abs(finalRate), 0.001);
-      const newDir = finalRate < -0.005 ? -1 : finalRate > 0.005 ? 1 : currentDirection;
-      if (newDir !== currentDirection || (Math.abs(absNew - lastSourceRate) > 0.04 && framesSinceRestart > 3)) {
-        virtualPlayhead = getPlayhead(); startMusicSource(virtualPlayhead, newDir * absNew); framesSinceRestart = 0;
-      } else { activeSource.playbackRate.setTargetAtTime(absNew, audioCtx.currentTime, 0.03); lastSourceRate = absNew; }
-    }
-
-    const absRate = Math.abs(smoothedRate);
-    const lpfRatio = Math.min(absRate, 1);
-    smoothedLPFFreq += (180 * Math.pow(22000/180, lpfRatio) - smoothedLPFFreq) * 0.06;
-    smoothedLPFQ += ((isDragging ? 2.5 : 0.707) - smoothedLPFQ) * 0.08;
-    smoothedMidGain += ((isDragging && absRate > 0.05 ? 6 : 0) - smoothedMidGain) * 0.1;
-    if (musicLPF) { musicLPF.frequency.setTargetAtTime(smoothedLPFFreq, audioCtx.currentTime, 0.02); musicLPF.Q.setTargetAtTime(smoothedLPFQ, audioCtx.currentTime, 0.02); }
-    if (scratchMidEQ) scratchMidEQ.gain.setTargetAtTime(smoothedMidGain, audioCtx.currentTime, 0.02);
-    if (musicGain) { const tv = 0.04 + 0.46 * Math.min(absRate, 1); musicGain.gain.setTargetAtTime(tv, audioCtx.currentTime, 0.05); }
-    if (crackleGain) { let cv = absRate < 0.02 ? 0 : absRate < 0.5 ? 0.12*(1-absRate/0.5)+0.02*(absRate/0.5) : 0.02; if (isDragging) cv *= 2.5; crackleGain.gain.setTargetAtTime(Math.min(cv, 0.3), audioCtx.currentTime, 0.04); }
-    if (crackleSource) crackleSource.playbackRate.setTargetAtTime(Math.max(0.1, absRate*1.2), audioCtx.currentTime, 0.05);
-    if (needleGain) needleGain.gain.setTargetAtTime(absRate > 0.02 ? 0.025*Math.min(absRate,1) : 0, audioCtx.currentTime, 0.04);
-  } else {
-    smoothedRate += (1 - smoothedRate) * 0.1;
-    if (activeSource && sourceIsPlaying) {
-      if (currentDirection !== 1) { virtualPlayhead = getPlayhead(); startMusicSource(virtualPlayhead, 1); }
-      else if (Math.abs(lastSourceRate - 1) > 0.01) { activeSource.playbackRate.setTargetAtTime(1, audioCtx.currentTime, 0.08); lastSourceRate = 1; }
-    }
-    smoothedLPFFreq += (22000 - smoothedLPFFreq) * 0.1; smoothedLPFQ += (0.707 - smoothedLPFQ) * 0.1; smoothedMidGain += -smoothedMidGain * 0.1;
-    if (musicLPF) { musicLPF.frequency.setTargetAtTime(smoothedLPFFreq, audioCtx.currentTime, 0.05); musicLPF.Q.setTargetAtTime(smoothedLPFQ, audioCtx.currentTime, 0.05); }
-    if (scratchMidEQ) scratchMidEQ.gain.setTargetAtTime(smoothedMidGain, audioCtx.currentTime, 0.05);
-    if (musicGain) musicGain.gain.setTargetAtTime(0.5, audioCtx.currentTime, 0.08);
-    if (crackleGain) crackleGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
-    if (needleGain) needleGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
-  }
-}
-'''}
-
+{audio_block}
 // ─── WEBCAM INIT ─────────────────────────────────────────
 const statusEl = document.getElementById("camera-status");
 const camPreview = document.getElementById("camera-preview");
