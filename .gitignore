@@ -26,3 +26,12 @@ yarn-error.log*
 .idea/
 .vscode/
 *.swp
+
+# remediacion 2026-09-14
+node_modules/
+.env
+.env.*
+.mimosa/
+__pycache__/
+.vercel/
+*.log
