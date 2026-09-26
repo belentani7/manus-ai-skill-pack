@@ -1,1 +1,50 @@
-<!DOCTYPE html><html lang='es'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Manus AI Skill Pack</title><style>body{font-family:system-ui,Segoe UI,Arial;background:#0b0b12;color:#eaeaf0;display:flex;min-height:100vh;align-items:center;justify-content:center;margin:0}a{color:#7dd3fc}</style></head><body><main style='text-align:center;max-width:640px'><h1>Manus AI Skill Pack</h1><p>Colección de skills. Explora el repositorio en <a href="https://github.com/belentani7/manus-ai-skill-pack">GitHub</a>.</p></main></body></html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MANUS AI SKILL PACK — BELENTANI</title>
+<style>
+  :root { --red:#ff0040; --glass:rgba(255,255,255,.07); }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; overflow:hidden; background:#0a0a0c; color:#fff;
+    font-family:'Courier New',monospace; display:grid; place-items:center; }
+  .panel {
+    padding:3rem 4rem; border-radius:18px; text-align:center;
+    background:var(--glass); backdrop-filter:blur(25px) saturate(180%);
+    border:1px solid rgba(255,255,255,.2);
+    box-shadow: inset 0 6px 12px rgba(255,255,255,.35),
+                inset 0 -40px 40px rgba(255,0,64,.15),
+                0 0 30px rgba(255,0,64,.45);
+    animation:glitch 3s infinite;
+  }
+  h1 { font-size:1.4rem; letter-spacing:.3em; color:var(--red);
+    text-shadow:0 0 12px var(--red); }
+  p { margin-top:1rem; opacity:.7; font-size:.8rem; letter-spacing:.2em; }
+  .bar { margin-top:1.5rem; height:3px; background:rgba(255,255,255,.15); border-radius:2px; overflow:hidden; }
+  .bar i { display:block; height:100%; width:40%; background:linear-gradient(90deg,transparent,var(--red),transparent); animation:load 1.2s linear infinite; }
+  @keyframes load { 0%{transform:translateX(-100%)} 100%{transform:translateX(350%)} }
+  @keyframes glitch { 0%,92%,100%{transform:none} 93%{transform:translate(2px,-1px)} 95%{transform:translate(-2px,1px)} 97%{transform:translate(1px,0)} }
+  canvas { position:fixed; inset:0; z-index:-1; opacity:.5; }
+</style>
+<meta http-equiv="refresh" content="0;url=ecosistema.html">
+</head>
+<body>
+<canvas id="rain"></canvas>
+<div class="panel">
+  <h1>MANUS AI SKILL PACK</h1>
+  <p>INICIANDO ECOSISTEMA…</p>
+  <div class="bar"><i></i></div>
+</div>
+<script>
+const c=document.getElementById('rain'),x=c.getContext('2d');
+function rs(){c.width=innerWidth;c.height=innerHeight}rs();onresize=rs;
+const cols='01アイウエオカキクケコ<>/{}#$'.split('');let d=Array(Math.floor(c.width/16)).fill(0);
+setInterval(()=>{x.fillStyle='rgba(10,10,12,.08)';x.fillRect(0,0,c.width,c.height);
+x.fillStyle='#ff0040';x.font='14px monospace';
+d.forEach((y,i)=>{x.fillText(cols[Math.random()*cols.length|0],i*16,y*16);
+d[i]=y*16>c.height&&Math.random()>.975?0:y+1})},50);
+setTimeout(()=>location.replace('ecosistema.html'),300);
+</script>
+</body>
+</html>
