@@ -1,35 +1,21 @@
-# MANUS AI SKILL PACK
+# manus-ai-skill-pack
 
-253 skills curated: frontend, generativas, automatizacion, full-stack.
+Paquete de skills de IA.
 
-## ✦ Página pública
+## Qué es
 
-**[Abrir Manus AI Skill Pack →](https://belentani7.github.io/manus-ai-skill-pack/)**
+Una colección de skills reutilizables: instrucciones empaquetadas que un agente carga para
+resolver tareas concretas. La idea es escribir la habilidad una vez y usarla muchas.
 
-La portada se publica mediante GitHub Pages desde `docs/`.
+## Estructura
 
-## Instalación en Manus
+Cada skill es un directorio con su `SKILL.md`: cuándo se activa y qué hace. El paquete se
+instala donde el agente las descubre.
 
-Skills > + Add > Import from GitHub > pegar esta URL.
+## Estado
 
-## Fuentes
+Empaquetado. El contenido es la parte viva: crece con cada habilidad nueva.
 
-anthropics/skills, openai/skills, vercel-labs/skills, greensock/gsap-skills, abcnuts/manus-skills, WebWakaHub/manus-agency-skills, firecrawl/cli, microsoft/agent-skills, Leonxlnx/taste-skill.
+## Licencia
 
-## Datos abiertos
-
-El directorio [`open-data/`](open-data/) trae un pack abierto de datos de **modelos LLM (OpenRouter)** (fuente publica, sin clave de API).
-
-```bash
-python scripts/fetch_open_data.py   # regenera el pack
-```
-
-Ver [`open-data/README.md`](open-data/README.md) para fuente y licencia.
-
-## Proyectos open similares
-
-- [LiteLLM](https://github.com/BerriAI/litellm)
-- [Portkey AI Gateway](https://github.com/Portkey-AI/gateway)
-- [Bifrost](https://github.com/maximhq/bifrost)
-- [Helicone](https://github.com/Helicone/helicone)
-- [RouteLLM](https://github.com/lm-sys/RouteLLM)
+Sin licencia declarada.
