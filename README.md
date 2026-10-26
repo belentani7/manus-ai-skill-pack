@@ -14,7 +14,7 @@ instala donde el agente las descubre.
 
 ## Estado
 
-Repositorio privado en revisión. Las instrucciones de skills de terceros no deben ejecutarse sin comprobar permisos, seguridad y procedencia. Los scripts de sincronización Drive ahora son de previsualización por defecto; `--apply`, `--commit` y `--push` son opt-in y requieren rama Git de trabajo limpia.
+Repositorio público en revisión de seguridad y licencias. Las instrucciones de skills de terceros no deben ejecutarse sin comprobar permisos, seguridad y procedencia. Los scripts de sincronización Drive ahora son de previsualización por defecto; `--apply`, `--commit` y `--push` son opt-in y requieren rama Git de trabajo limpia.
 
 ## Licencia
 
