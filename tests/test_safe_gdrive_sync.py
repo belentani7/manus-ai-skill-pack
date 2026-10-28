@@ -4,6 +4,7 @@ import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = [
@@ -107,6 +108,62 @@ class SafeSyncTests(unittest.TestCase):
         self.branch()
         (self.repo / "local.txt").write_text("do not touch")
         self.assertEqual(self.cli(self.module(SCRIPTS[0]), "--apply"), 1)
+
+    def test_source_root_symlink_rejected(self):
+        self.branch()
+        link = self.root / "source-link"
+        link.symlink_to(self.source, target_is_directory=True)
+        mod = self.module(SCRIPTS[0])
+        result = mod.main(["safe-folder", str(self.repo), "feat: import",
+                           "--source-dir", str(link), "--apply"])
+        self.assertEqual(result, 1)
+        self.assertFalse((self.repo / "skill.txt").exists())
+
+    def test_sensitive_names_are_case_insensitive(self):
+        mod = self.module(SCRIPTS[0])
+        for name in (".GIT", ".ENV.PROD", "Credentials.JSON"):
+            with self.subTest(name=name):
+                path = self.source / name
+                path.write_text("sensitive")
+                try:
+                    with self.assertRaises(ValueError):
+                        mod.preflight(self.source, self.repo)
+                finally:
+                    path.unlink()
+
+    def test_source_symlink_swap_after_preflight_rejected(self):
+        mod = self.module(SCRIPTS[0])
+        planned = mod.preflight(self.source, self.repo)
+        secret = self.root / "private.txt"
+        secret.write_text("private data")
+        (self.source / "skill.txt").unlink()
+        (self.source / "skill.txt").symlink_to(secret)
+        with self.assertRaises(ValueError):
+            mod.copy_new_files(planned)
+        self.assertFalse((self.repo / "skill.txt").exists())
+
+    def test_destination_parent_symlink_swap_rejected(self):
+        mod = self.module(SCRIPTS[0])
+        nested = self.source / "nested"
+        nested.mkdir()
+        (nested / "lesson.txt").write_text("lesson")
+        planned = mod.preflight(self.source, self.repo)
+        external = self.root / "external"
+        external.mkdir()
+        (self.repo / "nested").symlink_to(external, target_is_directory=True)
+        with self.assertRaises(ValueError):
+            mod.copy_new_files(planned)
+        self.assertFalse((external / "lesson.txt").exists())
+        self.assertFalse((self.repo / "skill.txt").exists())
+
+    def test_temp_file_cleaned_if_copy_raises(self):
+        mod = self.module(SCRIPTS[0])
+        planned = mod.preflight(self.source, self.repo)
+        with patch.object(mod.shutil, "copyfileobj", side_effect=OSError("copy failed")):
+            with self.assertRaises(OSError):
+                mod.copy_new_files(planned)
+        self.assertFalse((self.repo / "skill.txt").exists())
+        self.assertEqual(sorted(p.name for p in self.repo.iterdir()), [".git", "README.md"])
 
 
 if __name__ == "__main__":

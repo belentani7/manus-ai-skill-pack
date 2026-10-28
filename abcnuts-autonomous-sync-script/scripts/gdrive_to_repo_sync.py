@@ -63,7 +63,9 @@ def preflight(source: Path, repo: Path) -> list[tuple[Path, Path, str]]:
             path = base_path / name
             if path.is_symlink():
                 raise ValueError("Symlink refused: " + str(path.relative_to(source)))
-            if name in SENSITIVE_NAMES or name.startswith(".env") or path.suffix.lower() in SENSITIVE_SUFFIXES:
+            normalized_name = name.casefold()
+            if (normalized_name in SENSITIVE_NAMES or normalized_name.startswith(".env")
+                    or path.suffix.lower() in SENSITIVE_SUFFIXES):
                 raise ValueError("Sensitive path refused: " + str(path.relative_to(source)))
         for name in sorted(files):
             src = base_path / name
@@ -90,21 +92,33 @@ def preflight(source: Path, repo: Path) -> list[tuple[Path, Path, str]]:
 def copy_new_files(planned: list[tuple[Path, Path, str]]) -> None:
     created: list[Path] = []
     try:
-        for src, dest, _ in planned:
+        for src, dest, relative in planned:
+            # Preflight and copy are separate: recheck source and destination before writing.
+            if src.is_symlink() or not src.is_file() or src.stat().st_size > MAX_FILE_BYTES:
+                raise ValueError("Source changed since preflight: " + relative)
+            parts = Path(relative).parts
+            repo = dest.parents[len(parts) - 1]
+            parents = [repo.joinpath(*parts[:depth]) for depth in range(1, len(parts))]
+            if any(parent.is_symlink() for parent in parents):
+                raise ValueError("Destination parent became a symlink: " + relative)
             dest.parent.mkdir(parents=True, exist_ok=True)
+            if any(parent.is_symlink() for parent in parents):
+                raise ValueError("Destination parent became a symlink: " + relative)
             if dest.exists() or dest.is_symlink():
                 raise FileExistsError("Destination appeared during import: " + str(dest))
-            with tempfile.NamedTemporaryFile(dir=dest.parent, delete=False) as tmp:
-                temp_path = Path(tmp.name)
-                with src.open("rb") as reader:
-                    shutil.copyfileobj(reader, tmp)
+            temp_path = None
             try:
-                if sha256(src) != sha256(temp_path):
-                    raise OSError("Copy checksum mismatch")
+                with tempfile.NamedTemporaryFile(dir=dest.parent, delete=False) as tmp:
+                    temp_path = Path(tmp.name)
+                    with src.open("rb") as reader:
+                        shutil.copyfileobj(reader, tmp)
+                if src.is_symlink() or sha256(src) != sha256(temp_path):
+                    raise OSError("Source changed or copy checksum mismatch")
                 os.link(temp_path, dest)  # atomic create-only; never replace existing files
                 created.append(dest)
             finally:
-                temp_path.unlink(missing_ok=True)
+                if temp_path is not None:
+                    temp_path.unlink(missing_ok=True)
     except Exception:
         for dest in reversed(created):
             dest.unlink(missing_ok=True)
@@ -126,7 +140,10 @@ def run_import(args: argparse.Namespace) -> int:
             raise ValueError("Apply is permitted only on an explicit feature branch")
     with tempfile.TemporaryDirectory(prefix="gdrive-skill-sync-") as tmp:
         if args.source_dir:
-            source = Path(args.source_dir).expanduser().resolve()
+            candidate = Path(args.source_dir).expanduser()
+            if candidate.is_symlink():
+                raise ValueError("Source directory symlink refused")
+            source = candidate.resolve()
         else:
             source = Path(tmp)
             command(["rclone", "copy", "manus_google_drive:" + folder, str(source),

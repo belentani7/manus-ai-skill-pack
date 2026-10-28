@@ -6,6 +6,8 @@ license: Complete terms in LICENSE.txt
 
 # Autonomous GitHub Sync
 
+> **Aviso de seguridad (2026-10-28):** Los ejemplos históricos de esta skill que describen commit/push automáticos están OBSOLETOS. El script real en `scripts/gdrive_to_repo_sync.py` ejecuta solo previsualización por defecto. Para importar hay que usar una rama feature limpia y `--apply`; `--commit` y `--push` requieren autorización explícita mediante flags. Nunca ejecutar los ejemplos antiguos de `git push origin main` ni asumir que el script publica por sí mismo. Verifica el diff y las licencias de terceros antes de cualquier push.
+
 Enable Manus to commit and push changes to GitHub repositories without requiring manual user intervention.
 
 ## When to Use This Skill
