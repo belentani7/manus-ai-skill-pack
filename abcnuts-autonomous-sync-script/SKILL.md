@@ -5,6 +5,8 @@ description: Automate GitHub sync via Google Drive with a single command. Use wh
 
 # Autonomous Sync Script
 
+> **Aviso de seguridad (2026-10-28):** Este documento contiene ejemplos heredados que prometen copia, commit y push automáticos; ya no describen el script actual. La invocación sin flags solo muestra un PREVIEW. El import exige rama feature limpia y `--apply`; commit/push requieren `--commit`/`--push` explícitos. El ejemplo antiguo de añadir un `--dry-run` al código está obsoleto: la previsualización ya es el valor predeterminado. Revisar cambios y licencias antes de publicar.
+
 ## Overview
 
 This skill automates the process of syncing files from Manus to your GitHub repository via Google Drive. Instead of manually downloading files and committing them, this skill uploads everything to Google Drive and provides a single command to run on your local machine that automatically downloads, commits, and pushes to GitHub.
